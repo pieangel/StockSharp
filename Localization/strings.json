@@ -3302,6 +3302,7 @@
   "Signal": "Signal",
   "SignalHeader": "Signal header.",
   "SignalMa": "Signaling MA",
+  "SignalMaster": "Signal Master",
   "SignalMaDesc": "Signaling Moving Average.",
   "SignalPart": "Signaling part of indicator.",
   "SignalText": "Message text.",

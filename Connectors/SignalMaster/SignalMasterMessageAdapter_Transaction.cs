@@ -238,7 +238,7 @@ partial class SignalMasterMessageAdapter
 		SendOutMessage(new PortfolioMessage
 		{
 			PortfolioName = GetPortfolioName(),
-			BoardCode = BoardCodes.FTX,
+			BoardCode = BoardCodes.SignalMaster,
 			OriginalTransactionId = (long)_portfolioLookupSubMessageTransactionID,
 		});
 

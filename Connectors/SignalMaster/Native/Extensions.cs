@@ -53,7 +53,7 @@ static class Extensions
 		return new SecurityId
 		{
 			SecurityCode = currency,
-			BoardCode = BoardCodes.FTX,
+			BoardCode = BoardCodes.SignalMaster,
 		};
 	}
 }

@@ -48,7 +48,7 @@ public partial class SignalMasterMessageAdapter
 	}
 
 	/// <inheritdoc />
-	public override string[] AssociatedBoards { get; } = new[] { BoardCodes.FTX };
+	public override string[] AssociatedBoards { get; } = new[] { BoardCodes.SignalMaster };
 
 	/// <inheritdoc />
 	public override bool IsAllDownloadingSupported(DataType dataType)

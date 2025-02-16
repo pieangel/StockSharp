@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Security;
 
 using Ecng.ComponentModel;
+using StockSharp.Localization;
 
 /// <summary>
 /// The message adapter for <see cref="SignalMaster"/>.
@@ -12,7 +13,7 @@ using Ecng.ComponentModel;
 [Doc("topics/ftx.html")]
 [Display(
 	ResourceType = typeof(LocalizedStrings),
-	Name = LocalizedStrings.FTXKey,
+	Name = LocalizedStrings.SignalMasterKey,
 	Description = LocalizedStrings.CryptoConnectorKey,
 	GroupName = LocalizedStrings.CryptocurrencyKey)]
 [MessageAdapterCategory(MessageAdapterCategories.Crypto | MessageAdapterCategories.RealTime |

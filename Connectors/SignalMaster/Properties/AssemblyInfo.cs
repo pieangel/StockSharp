@@ -7,4 +7,4 @@
 [assembly: AssemblyDescription("SignalMaster connector.")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8F3E2591-4353-403B-B75F-CCF0A2AEEA7B")]
+[assembly: Guid("531D0609-0396-49AE-9C8C-ACEC5357BCE5")]
