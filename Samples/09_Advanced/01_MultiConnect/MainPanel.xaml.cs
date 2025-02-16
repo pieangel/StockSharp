@@ -47,7 +47,6 @@ public partial class MainPanel
 	public MainPanel()
 	{
 		InitializeComponent();
-
 		_ordersWindow.MakeHideable();
 		_myTradesWindow.MakeHideable();
 		_tradesWindow.MakeHideable();
@@ -72,7 +71,7 @@ public partial class MainPanel
 
 		Connector = CreateConnector?.Invoke(_defaultDataPath) ?? new Connector();
 		logManager.Sources.Add(Connector);
-
+		MainWindow.TriggerInitSignalMasterMessageAdapter(); // This will call InitSignalMasterMessageAdapter()
 		InitWeb();
 		InitConnector();
 	}

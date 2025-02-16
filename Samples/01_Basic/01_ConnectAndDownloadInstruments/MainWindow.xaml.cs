@@ -23,7 +23,7 @@ public partial class MainWindow
 	private readonly Connector _connector = new();
 	private const string _connectorFile = "ConnectorFile.json";
 
-	private SignalMasterMessageAdapter slMessageAdapter;
+	private SignalMasterMessageAdapter signalMasterMessageAdapter;
 
 	public class SciLeanIdGenerator : Ecng.Common.IdGenerator
 	{
@@ -53,15 +53,15 @@ public partial class MainWindow
 
 	private void InitSignalMasterMessageAdapter()
 	{
-		slMessageAdapter = new SignalMasterMessageAdapter(new SciLeanIdGenerator());
+		signalMasterMessageAdapter = new SignalMasterMessageAdapter(new SciLeanIdGenerator());
 		var apiKey = ToSecureString("angelpie"); // Replace with your actual API key
 		var apiSecret = ToSecureString("orion"); // Replace with your actual API secret
 
-		slMessageAdapter.Key = apiKey;
-		slMessageAdapter.Secret = apiSecret;
+		signalMasterMessageAdapter.Key = apiKey;
+		signalMasterMessageAdapter.Secret = apiSecret;
 
 		// Add the Coinbase adapter to the connector
-		_connector.Adapter.InnerAdapters.Add(slMessageAdapter);
+		_connector.Adapter.InnerAdapters.Add(signalMasterMessageAdapter);
 	}
 
 	public MainWindow()

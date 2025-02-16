@@ -11,15 +11,69 @@ using StockSharp.Algo;
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Storages.Csv;
 using StockSharp.BusinessEntities;
+using StockSharp.SignalMaster;
+using System.Security;
+using System.Threading;
+using System;
 
 public partial class MainWindow
 {
+	public static event Action OnInitSignalMasterMessageAdapter;  // Define event
+	private Connector _connector;
+	private SignalMasterMessageAdapter signalMasterMessageAdapter;
+
+	public class SciLeanIdGenerator : Ecng.Common.IdGenerator
+	{
+		private long _currentId;
+
+		public SciLeanIdGenerator()
+		{
+			_currentId = 1;
+		}
+
+		public override long GetNextId()
+		{
+			return Interlocked.Increment(ref _currentId);
+		}
+	}
+
+	private static SecureString ToSecureString(string str)
+	{
+		var secureString = new SecureString();
+		foreach (char c in str)
+		{
+			secureString.AppendChar(c);
+		}
+		secureString.MakeReadOnly();
+		return secureString;
+	}
+
+	private void InitSignalMasterMessageAdapter()
+	{
+		signalMasterMessageAdapter = new SignalMasterMessageAdapter(new SciLeanIdGenerator());
+		var apiKey = ToSecureString("angelpie"); // Replace with your actual API key
+		var apiSecret = ToSecureString("orion"); // Replace with your actual API secret
+
+		signalMasterMessageAdapter.Key = apiKey;
+		signalMasterMessageAdapter.Secret = apiSecret;
+
+		// Add the Coinbase adapter to the connector
+		_connector.Adapter.InnerAdapters.Add(signalMasterMessageAdapter);
+	}
+
+	public static void TriggerInitSignalMasterMessageAdapter()
+	{
+		OnInitSignalMasterMessageAdapter?.Invoke();  // Fire the event
+	}
+
 	public MainWindow()
 	{
 		InitializeComponent();
 		Instance = this;
 
 		Title = Title.Put("Connections with storage");
+
+		OnInitSignalMasterMessageAdapter += InitSignalMasterMessageAdapter;  // Subscribe event
 	}
 
 	private Connector MainPanel_OnCreateConnector(string path)
@@ -48,7 +102,8 @@ public partial class MainWindow
 
 		var snapshotRegistry = new SnapshotRegistry(Path.Combine(path, "Snapshots"));
 
-		return new Connector(entityRegistry.Securities, entityRegistry.PositionStorage, exchangeInfoProvider, storageRegistry, snapshotRegistry, new StorageBuffer());
+		_connector = new Connector(entityRegistry.Securities, entityRegistry.PositionStorage, exchangeInfoProvider, storageRegistry, snapshotRegistry, new StorageBuffer());
+		return _connector;
 	}
 
 	protected override void OnClosing(CancelEventArgs e)
