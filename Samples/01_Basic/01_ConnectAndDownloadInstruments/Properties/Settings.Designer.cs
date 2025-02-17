@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace StockSharp.Samples.Basic.ConnectAndDownloadInstruments.Properties {
+namespace Basic.ConnectAndDownloadInstruments.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

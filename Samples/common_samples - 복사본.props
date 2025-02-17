@@ -1,0 +1,27 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <SampleProjectNameBase>$(MSBuildProjectName)</SampleProjectNameBase>
+  </PropertyGroup>
+  
+    <!-- workaround for https://github.com/dotnet/wpf/issues/5711 -->
+  <PropertyGroup Condition="$(_TargetAssemblyProjectName) != ''">
+    <SampleProjectNameBase>$(_TargetAssemblyProjectName)</SampleProjectNameBase>
+  </PropertyGroup>
+
+    <Target Name="PrintProperties" AfterTargets="Build">
+        <Message Text="_TargetAssemblyProjectName = $(_TargetAssemblyProjectName)" Importance="high" />
+        <Message Text="MSBuildProjectName = $(MSBuildProjectName)" Importance="high" />
+		<Message Text="SampleProjectName = $(SampleProjectName)" Importance="high" />
+		<Message Text="EcngVer = $(EcngVer)" Importance="high" />
+		<Message Text="StockSharpTargets = $(StockSharpTargets)" Importance="high" />
+		<Message Text="RepoAppsPath = $(RepoAppsPath)" Importance="high" />
+		
+    </Target>
+
+  <PropertyGroup>
+    <SampleProjectName>$([System.Text.RegularExpressions.Regex]::Replace($(SampleProjectNameBase), '^\d+_(.+?)(_fromsrc)?$', '$1'))</SampleProjectName>
+    <RootNamespace>StockSharp.Samples.$(SampleProjectName)</RootNamespace>
+    <AssemblyName>StockSharp.Samples.$(SampleProjectName)</AssemblyName>
+  </PropertyGroup>
+</Project>

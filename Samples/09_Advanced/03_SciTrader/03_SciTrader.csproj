@@ -2,18 +2,23 @@
   <Import Project="..\..\common_samples_netwindows.props" />
   <Import Project="..\..\common_connectors.props" />
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.12.0" />
+    <PackageReference Include="NLog" Version="5.4.0" />
+    <PackageReference Include="SciChart" Version="8.6.0.28199" />
+    <PackageReference Include="SciChart.DrawingTools" Version="8.6.0.28199" />
+    <PackageReference Include="SciChart.ExternalDependencies" Version="8.6.0.28199" />
+    <PackageReference Include="SciChart3D" Version="8.6.0.28199" />
     <PackageReference Include="StockSharp.Xaml.Charting" Version="$(StockSharpVer)" />
     <PackageReference Include="StockSharp.Studio.WebApi.UI" Version="$(StockSharpVer)" />
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="..\01_MultiConnect\App.xaml" Link="App.xaml" />
-    <Compile Include="..\01_MultiConnect\App.xaml.cs" DependentUpon="App.xaml" Link="App.xaml.cs" />
-
-    <Page Include="..\01_MultiConnect\*.xaml" Exclude="..\01_MultiConnect\App.xaml;..\01_MultiConnect\MainWindow.xaml" DependentUpon="%(Filename).xaml" Link="%(Filename).xaml" />
-    <Compile Include="..\01_MultiConnect\*.xaml.cs" Exclude="..\01_MultiConnect\App.xaml.cs;..\01_MultiConnect\MainWindow.xaml.cs" DependentUpon="%(Filename)" />
+    <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Algo\Algo.csproj" />
     <ProjectReference Include="..\..\..\Connectors\SignalMaster\SignalMaster.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.Xpf.DemoBase.v22.1">
+      <HintPath>C:\Program Files\DevExpress 22.1\Components\Offline Packages\devexpress.wpf.demos\22.1.3\lib\netcoreapp3.0\DevExpress.Xpf.DemoBase.v22.1.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

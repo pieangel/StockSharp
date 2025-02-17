@@ -21,7 +21,7 @@
 
   <PropertyGroup>
     <SampleProjectName>$([System.Text.RegularExpressions.Regex]::Replace($(SampleProjectNameBase), '^\d+_(.+?)(_fromsrc)?$', '$1'))</SampleProjectName>
-    <RootNamespace>StockSharp.Samples.$(SampleProjectName)</RootNamespace>
-    <AssemblyName>StockSharp.Samples.$(SampleProjectName)</AssemblyName>
+    <RootNamespace>$(SampleProjectName)</RootNamespace>
+    <AssemblyName>$(SampleProjectName)</AssemblyName>
   </PropertyGroup>
 </Project>

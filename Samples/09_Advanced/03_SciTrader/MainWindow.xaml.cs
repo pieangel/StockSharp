@@ -1,4 +1,4 @@
-namespace StockSharp.Samples.Advanced.MultiConnect;
+namespace SciTrader;
 
 using System.ComponentModel;
 using System.IO;
