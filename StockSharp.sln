@@ -136,6 +136,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "02_Advanced.SaveDataLocal",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "03_SciTrader", "Samples\09_Advanced\03_SciTrader\03_SciTrader.csproj", "{854463D7-2F88-D3E1-3624-E6CF110B12A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "02_Advanced.SaveDataLocal", "Samples\09_Advanced\02_StoreDataLocal\02_Advanced.SaveDataLocal.csproj", "{1C6A12BC-E922-92E4-C187-E9B9EBDAC32C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -358,6 +360,10 @@ Global
 		{854463D7-2F88-D3E1-3624-E6CF110B12A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{854463D7-2F88-D3E1-3624-E6CF110B12A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{854463D7-2F88-D3E1-3624-E6CF110B12A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C6A12BC-E922-92E4-C187-E9B9EBDAC32C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C6A12BC-E922-92E4-C187-E9B9EBDAC32C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C6A12BC-E922-92E4-C187-E9B9EBDAC32C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C6A12BC-E922-92E4-C187-E9B9EBDAC32C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -417,6 +423,7 @@ Global
 		{CAC2300F-FFD5-D50E-820D-73BE363E5574} = {7F7B05F0-13D7-4087-92FE-0E765581D850}
 		{A655013D-5BA2-00FE-CC4C-47B075598810} = {AB18D439-A71C-4734-BA3F-C18820D1E1F8}
 		{854463D7-2F88-D3E1-3624-E6CF110B12A6} = {AB18D439-A71C-4734-BA3F-C18820D1E1F8}
+		{1C6A12BC-E922-92E4-C187-E9B9EBDAC32C} = {AB18D439-A71C-4734-BA3F-C18820D1E1F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05C6C3D9-0063-47AB-BC11-315B396BEBD0}
