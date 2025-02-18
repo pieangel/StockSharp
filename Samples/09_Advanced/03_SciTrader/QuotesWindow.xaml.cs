@@ -21,7 +21,7 @@ public partial class QuotesWindow
 	public Security Security { get; set; }
 	public int? MaxDepth { get; set; }
 
-	private static Connector Connector => MainWindow.Instance.MainPanel.Connector;
+	private static Connector Connector => MainWindow.Instance.Connector;
 
 	private void DepthCtrl_MovingOrder(Order order, decimal newPrice)
 	{

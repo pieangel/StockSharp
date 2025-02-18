@@ -135,7 +135,7 @@ public partial class SecuritiesWindow
 		InitializeComponent();
 	}
 
-	private static Connector Connector => MainWindow.Instance.MainPanel.Connector;
+	private static Connector Connector => MainWindow.Instance.Connector;
 
 	private void SecuritiesWindow_OnLoaded(object sender, RoutedEventArgs e)
 	{

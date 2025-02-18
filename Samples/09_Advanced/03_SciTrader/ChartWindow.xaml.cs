@@ -25,7 +25,7 @@ partial class ChartWindow
 
 		Title = mdMsg.SecurityId + " - " + mdMsg.DataType2.ToString();
 
-		_connector = MainWindow.Instance.MainPanel.Connector;
+		_connector = MainWindow.Instance.Connector;
 
 		Chart.ChartTheme = ChartThemes.ExpressionDark;
 

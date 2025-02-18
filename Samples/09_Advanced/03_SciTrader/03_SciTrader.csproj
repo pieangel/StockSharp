@@ -2,6 +2,378 @@
   <Import Project="..\..\common_samples_netwindows.props" />
   <Import Project="..\..\common_connectors.props" />
   <ItemGroup>
+    <None Remove="Images\AppIcon.ico" />
+    <None Remove="Images\Docking\About.svg" />
+    <None Remove="Images\Docking\CloseSolution.svg" />
+    <None Remove="Images\Docking\Copy.svg" />
+    <None Remove="Images\Docking\Cut.svg" />
+    <None Remove="Images\Docking\Error.svg" />
+    <None Remove="Images\Docking\File.svg" />
+    <None Remove="Images\Docking\FileCS.svg" />
+    <None Remove="Images\Docking\FileXaml.svg" />
+    <None Remove="Images\Docking\Find.svg" />
+    <None Remove="Images\Docking\FindInFiles.svg" />
+    <None Remove="Images\Docking\FindInFilesWindow.svg" />
+    <None Remove="Images\Docking\Info.svg" />
+    <None Remove="Images\Docking\LoadLayout.svg" />
+    <None Remove="Images\Docking\NewProject.svg" />
+    <None Remove="Images\Docking\OpenFile.svg" />
+    <None Remove="Images\Docking\OpenSolution.svg" />
+    <None Remove="Images\Docking\Output.svg" />
+    <None Remove="Images\Docking\Paste.svg" />
+    <None Remove="Images\Docking\PropertiesWindow.svg" />
+    <None Remove="Images\Docking\Redo.svg" />
+    <None Remove="Images\Docking\References.svg" />
+    <None Remove="Images\Docking\Refresh.svg" />
+    <None Remove="Images\Docking\Replace.svg" />
+    <None Remove="Images\Docking\Run.svg" />
+    <None Remove="Images\Docking\Save.svg" />
+    <None Remove="Images\Docking\SaveAll.svg" />
+    <None Remove="Images\Docking\SaveLayout.svg" />
+    <None Remove="Images\Docking\ShowAllFiles.svg" />
+    <None Remove="Images\Docking\SolutionExplorer.svg" />
+    <None Remove="Images\Docking\SplashScreenBackground.png" />
+    <None Remove="Images\Docking\TaskList.svg" />
+    <None Remove="Images\Docking\Toolbox.svg" />
+    <None Remove="Images\Docking\Undo.svg" />
+    <None Remove="Images\Docking\Warning.svg" />
+    <None Remove="Images\DX\BarCodeEdit.svg" />
+    <None Remove="Images\DX\ButtonEdit.svg" />
+    <None Remove="Images\DX\Calculator.svg" />
+    <None Remove="Images\DX\ChartControl.svg" />
+    <None Remove="Images\DX\CheckEdit.svg" />
+    <None Remove="Images\DX\ColorEdit.svg" />
+    <None Remove="Images\DX\DateEdit.svg" />
+    <None Remove="Images\DX\GridControl.svg" />
+    <None Remove="Images\DX\ImageEdit.svg" />
+    <None Remove="Images\DX\ListBoxEdit.svg" />
+    <None Remove="Images\DX\LookUpEdit.svg" />
+    <None Remove="Images\DX\MemoEdit.svg" />
+    <None Remove="Images\DX\PDFViewer.svg" />
+    <None Remove="Images\DX\PivotGridControl.svg" />
+    <None Remove="Images\DX\PopupBaseEdit.svg" />
+    <None Remove="Images\DX\RangeControl.svg" />
+    <None Remove="Images\DX\SchedulerControl.svg" />
+    <None Remove="Images\DX\SpreadsheetControl.svg" />
+    <None Remove="Images\DX\TextEdit.svg" />
+    <None Remove="Images\DX\ToggleSwitch.svg" />
+    <None Remove="Images\DX\ToggleSwitchEdit.svg" />
+    <None Remove="Images\General\BarCodeEdit.svg" />
+    <None Remove="Images\General\Button.svg" />
+    <None Remove="Images\General\ButtonEdit.svg" />
+    <None Remove="Images\General\Calculator.svg" />
+    <None Remove="Images\General\ChartControl.svg" />
+    <None Remove="Images\General\CheckBox.svg" />
+    <None Remove="Images\General\CheckBoxList.svg" />
+    <None Remove="Images\General\CheckEdit.svg" />
+    <None Remove="Images\General\ColorEdit.svg" />
+    <None Remove="Images\General\ComboBox.svg" />
+    <None Remove="Images\General\DataGrid.svg" />
+    <None Remove="Images\General\DateEdit.svg" />
+    <None Remove="Images\General\GridControl.svg" />
+    <None Remove="Images\General\GroupBox.svg" />
+    <None Remove="Images\General\ImageEdit.svg" />
+    <None Remove="Images\General\Label.svg" />
+    <None Remove="Images\General\ListBox.svg" />
+    <None Remove="Images\General\ListBoxEdit.svg" />
+    <None Remove="Images\General\ListView.svg" />
+    <None Remove="Images\General\LookUpEdit.svg" />
+    <None Remove="Images\General\MemoEdit.svg" />
+    <None Remove="Images\General\Panel.svg" />
+    <None Remove="Images\General\PDFViewer.svg" />
+    <None Remove="Images\General\PivotGridControl.svg" />
+    <None Remove="Images\General\PopupBaseEdit.svg" />
+    <None Remove="Images\General\RadioButton.svg" />
+    <None Remove="Images\General\RangeControl.svg" />
+    <None Remove="Images\General\SchedulerControl.svg" />
+    <None Remove="Images\General\SplitContainerControl.svg" />
+    <None Remove="Images\General\SplitterControl.svg" />
+    <None Remove="Images\General\SpreadsheetControl.svg" />
+    <None Remove="Images\General\TabControl.svg" />
+    <None Remove="Images\General\TableLayoutPanel.svg" />
+    <None Remove="Images\General\TextEdit.svg" />
+    <None Remove="Images\General\ToggleSwitch.svg" />
+    <None Remove="Images\General\ToggleSwitchEdit.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\AppIcon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\About.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\CloseSolution.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Copy.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Cut.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Error.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\File.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\FileCS.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\FileXaml.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Find.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\FindInFiles.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\FindInFilesWindow.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Info.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\LoadLayout.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\NewProject.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\OpenFile.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\OpenSolution.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Output.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Paste.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\PropertiesWindow.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Redo.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\References.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Refresh.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Replace.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Run.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Save.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\SaveAll.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\SaveLayout.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\ShowAllFiles.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\SolutionExplorer.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\SplashScreenBackground.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\TaskList.svg">
+      <CopyToOutputDirectory></CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Toolbox.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Undo.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Docking\Warning.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Content Include="Images\DX\BarCodeEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\ButtonEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\Calculator.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\ChartControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\CheckEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\ColorEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\DateEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\GridControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\ImageEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\ListBoxEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\LookUpEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\MemoEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\PDFViewer.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\PivotGridControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\PopupBaseEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\RangeControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\SchedulerControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\SpreadsheetControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\TextEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\ToggleSwitch.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DX\ToggleSwitchEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Images\General\BarCodeEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\Button.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ButtonEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\Calculator.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ChartControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\CheckBox.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\CheckBoxList.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\CheckEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ColorEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ComboBox.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\DataGrid.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\DateEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\GridControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\GroupBox.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ImageEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\Label.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ListBox.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ListBoxEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ListView.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\LookUpEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\MemoEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\Panel.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\PDFViewer.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\PivotGridControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\PopupBaseEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\RadioButton.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\RangeControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\SchedulerControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\SplitContainerControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\SplitterControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\SpreadsheetControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\TabControl.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\TableLayoutPanel.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\TextEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ToggleSwitch.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\General\ToggleSwitchEdit.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.12.0" />
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="SciChart" Version="8.6.0.28199" />

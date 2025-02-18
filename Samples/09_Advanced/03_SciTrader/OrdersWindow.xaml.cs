@@ -15,7 +15,7 @@ public partial class OrdersWindow
 		InitializeComponent();
 	}
 
-	private static Connector Connector => MainWindow.Instance.MainPanel.Connector;
+	private static Connector Connector => MainWindow.Instance.Connector;
 
 	private void OrderGrid_OnOrderCanceling(Order order)
 	{

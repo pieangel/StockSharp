@@ -1,130 +1,220 @@
-namespace SciTrader;
-
-using System.ComponentModel;
+using System;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
+using DevExpress.Mvvm.Native;
+using DevExpress.Mvvm.POCO;
+using DevExpress.Utils;
+using DevExpress.Utils.About;
+using DevExpress.Xpf;
+using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Bars.Native;
+using DevExpress.Xpf.Core;
+using DevExpress.Xpf.DemoBase.Helpers;
+using DevExpress.Xpf.DemoBase.Helpers.TextColorizer;
+using DevExpress.Xpf.Docking;
+using DevExpress.Xpf.PropertyGrid;
 
-using Ecng.Common;
+using Ecng.Serialization;
 using Ecng.Configuration;
 
+using StockSharp.Configuration;
 using StockSharp.Messages;
 using StockSharp.Algo;
+using StockSharp.BusinessEntities;
+using StockSharp.Xaml;
+using System.Threading;
+using System.Security;
+using SciTrader.Network;
+using System.Threading.Tasks;
+using DevExpress.Xpf.DemoCenterBase;
+
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Storages.Csv;
-using StockSharp.BusinessEntities;
-using StockSharp.SignalMaster;
-using System.Security;
-using System.Threading;
-using System;
 
-public partial class MainWindow
+namespace SciTrader
 {
-	public static event Action OnInitSignalMasterMessageAdapter;  // Define event
-	private Connector _connector;
-	private SignalMasterMessageAdapter signalMasterMessageAdapter;
+    public partial class MainWindow : ThemedWindow {
+		private Connector _connector;
+		public Connector Connector { get; private set; }
+		private const string _connectorFile = "ConnectorFile.json";
 
-	public class SciLeanIdGenerator : Ecng.Common.IdGenerator
-	{
-		private long _currentId;
+		private readonly List<Subscription> _subscriptions = new();
+		//private SecurityId? _selectedSecurityId;
+		/*
+		private SciLeanMessageAdapter slMessageAdapter;
 
-		public SciLeanIdGenerator()
+		public class SciLeanIdGenerator : Ecng.Common.IdGenerator
 		{
-			_currentId = 1;
+			private long _currentId;
+
+			public SciLeanIdGenerator()
+			{
+				_currentId = 1;
+			}
+
+			public override long GetNextId()
+			{
+				return Interlocked.Increment(ref _currentId);
+			}
+		}
+		*/
+
+		private static SecureString ToSecureString(string str)
+		{
+			var secureString = new SecureString();
+			foreach (char c in str)
+			{
+				secureString.AppendChar(c);
+			}
+			secureString.MakeReadOnly();
+			return secureString;
 		}
 
-		public override long GetNextId()
+		private void InitConnect()
 		{
-			return Interlocked.Increment(ref _currentId);
+			// registering all connectors
+			ConfigManager.RegisterService<IMessageAdapterProvider>(new InMemoryMessageAdapterProvider(_connector.Adapter.InnerAdapters));
+
+			if (File.Exists(_connectorFile))
+			{
+				_connector.Load(_connectorFile.Deserialize<SettingsStorage>());
+			}
 		}
-	}
-
-	private static SecureString ToSecureString(string str)
-	{
-		var secureString = new SecureString();
-		foreach (char c in str)
+		/*
+		private void InitSciLeanMessageAdapter()
 		{
-			secureString.AppendChar(c);
+			slMessageAdapter = new SciLeanMessageAdapter(new SciLeanIdGenerator());
+			var apiKey = ToSecureString("angelpie"); // Replace with your actual API key
+			var apiSecret = ToSecureString("orion"); // Replace with your actual API secret
+
+			slMessageAdapter.Key = apiKey;
+			slMessageAdapter.Secret = apiSecret;
+
+			// Add the Coinbase adapter to the connector
+			_connector.Adapter.InnerAdapters.Add(slMessageAdapter);
 		}
-		secureString.MakeReadOnly();
-		return secureString;
-	}
-
-	private void InitSignalMasterMessageAdapter()
-	{
-		signalMasterMessageAdapter = new SignalMasterMessageAdapter(new SciLeanIdGenerator());
-		var apiKey = ToSecureString("angelpie"); // Replace with your actual API key
-		var apiSecret = ToSecureString("orion"); // Replace with your actual API secret
-
-		signalMasterMessageAdapter.Key = apiKey;
-		signalMasterMessageAdapter.Secret = apiSecret;
-
-		// Add the Coinbase adapter to the connector
-		_connector.Adapter.InnerAdapters.Add(signalMasterMessageAdapter);
-	}
-
-	public static void TriggerInitSignalMasterMessageAdapter()
-	{
-		OnInitSignalMasterMessageAdapter?.Invoke();  // Fire the event
-	}
-
-	public MainWindow()
-	{
-		InitializeComponent();
-		Instance = this;
-
-		Title = Title.Put("Connections with storage");
-
-		OnInitSignalMasterMessageAdapter += InitSignalMasterMessageAdapter;  // Subscribe event
-	}
-
-	private Connector MainPanel_OnCreateConnector(string path)
-	{
-		//HistoryPath.Folder = path;
-
-		var entityRegistry = new CsvEntityRegistry(path);
-
-		var exchangeInfoProvider = new StorageExchangeInfoProvider(entityRegistry, false);
-		ConfigManager.RegisterService<IExchangeInfoProvider>(exchangeInfoProvider);
-		ConfigManager.RegisterService<IBoardMessageProvider>(exchangeInfoProvider);
-
-		var storageRegistry = new StorageRegistry(exchangeInfoProvider)
+		*/
+		public static MainWindow Instance { get; private set; }
+		private Connector MainPanel_OnCreateConnector(string path)
 		{
-			DefaultDrive = new LocalMarketDataDrive(path)
-		};
+			//HistoryPath.Folder = path;
 
-		ConfigManager.RegisterService<IEntityRegistry>(entityRegistry);
-		ConfigManager.RegisterService<IStorageRegistry>(storageRegistry);
+			var entityRegistry = new CsvEntityRegistry(path);
 
-		INativeIdStorage nativeIdStorage = new CsvNativeIdStorage(Path.Combine(path, "NativeId"))
+			var exchangeInfoProvider = new StorageExchangeInfoProvider(entityRegistry, false);
+			ConfigManager.RegisterService<IExchangeInfoProvider>(exchangeInfoProvider);
+			ConfigManager.RegisterService<IBoardMessageProvider>(exchangeInfoProvider);
+
+			var storageRegistry = new StorageRegistry(exchangeInfoProvider)
+			{
+				DefaultDrive = new LocalMarketDataDrive(path)
+			};
+
+			ConfigManager.RegisterService<IEntityRegistry>(entityRegistry);
+			ConfigManager.RegisterService<IStorageRegistry>(storageRegistry);
+
+			INativeIdStorage nativeIdStorage = new CsvNativeIdStorage(Path.Combine(path, "NativeId"))
+			{
+				DelayAction = entityRegistry.DelayAction
+			};
+			ConfigManager.RegisterService(nativeIdStorage);
+
+			var snapshotRegistry = new SnapshotRegistry(Path.Combine(path, "Snapshots"));
+
+			_connector = new Connector(entityRegistry.Securities, entityRegistry.PositionStorage, exchangeInfoProvider, storageRegistry, snapshotRegistry, new StorageBuffer());
+			return _connector;
+		}
+		static void ShowSplashScreen() {
+            var viewModel = new DXSplashScreenViewModel() {
+                Title = "Visual Studio Inspired UI Demo",
+                Subtitle = "Powered by DevExpress",
+                Logo = new Uri(string.Format(@"pack://application:,,,/DevExpress.Xpf.DemoBase.v{0};component/DemoLauncher/Images/Logo.svg", AssemblyInfo.VersionShort))
+            };
+            //SplashScreenManager.Create(() => new DockingSplashScreenWindow(), viewModel).ShowOnStartup();
+        }
+
+		protected override void OnContentRendered(EventArgs e)
 		{
-			DelayAction = entityRegistry.DelayAction
-		};
-		ConfigManager.RegisterService(nativeIdStorage);
+			base.OnContentRendered(e);
+			//MessageBox.Show("MainWindow Loaded!");
+			DownloadButton_Click(this, null);
+		}
 
-		var snapshotRegistry = new SnapshotRegistry(Path.Combine(path, "Snapshots"));
+		private async void DownloadButton_Click(object sender, RoutedEventArgs e)
+		{
+			string serverUrl = "http://localhost:9000";
+			string saveDirectory = ".\\mst";
 
-		_connector = new Connector(entityRegistry.Securities, entityRegistry.PositionStorage, exchangeInfoProvider, storageRegistry, snapshotRegistry, new StorageBuffer());
-		return _connector;
-	}
+			FileDownloader downloader = new FileDownloader(serverUrl, saveDirectory);
 
-	protected override void OnClosing(CancelEventArgs e)
-	{
-		MainPanel.Close();
+			// Show loading message before starting
+			LoadingMessage.Visibility = Visibility.Visible;
 
-		ServicesRegistry.EntityRegistry.DelayAction.DefaultGroup.WaitFlush(true);
+			await downloader.DownloadAllFilesAsync(async () =>
+			{
+				var symbolManager = ((App)Application.Current).SymbolManager;
 
-		base.OnClosing(e);
-	}
+				await Task.Run(() =>
+				{
+					symbolManager.ReadForeignMarketFile("mst", "MRKT.cod");
+					symbolManager.ReadForeignSymbolFile("mst", "JMCODE.cod");
+					symbolManager.ReadHomeProductFile("mst", "dm_product.cod");
+					symbolManager.ReadHomeSymbolMasterFile("mst", "chocode.cod");
+				});
 
-	public static MainWindow Instance { get; private set; }
+				// Hide loading message after completion
+				LoadingMessage.Visibility = Visibility.Collapsed;
 
-	private void HistoryPath_OnFolderChanged(string path)
-	{
-		var connector = MainPanel.Connector;
+				MessageBox.Show("Download completed successfully!", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+			});
+		}
 
-		if (connector == null)
-			return;
 
-		connector.Adapter.StorageSettings.Drive = new LocalMarketDataDrive(path.ToFullPath());
-		connector.LookupAll();
+		public MainWindow() {
+			Instance = this;
+			try
+			{
+				ApplicationThemeHelper.ApplicationThemeName = Theme.Office2019Colorful.Name;
+				ShowSplashScreen();
+				//DemoRunner.SubscribeThemeChanging();
+				Theme.CachePaletteThemes = true;
+				Theme.RegisterPredefinedPaletteThemes();
+				InitializeComponent();
+
+				//InitSciLeanMessageAdapter();
+				//InitConnect();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"XAML error: {ex.Message}");
+			}
+		}
+
+		private void Setting_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				if (_connector.Configure(this))
+				{
+					_connector.Save().Serialize(_connectorFile);
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Error: {ex.Message}");
+			}
+		}
 	}
 }

@@ -235,7 +235,7 @@ namespace SciTrader.ViewModels
             var chartDataManager = ChartDataManager.Instance;
             chartDataManager.PriceSeriesReceived += OnPriceSeriesReceived;
             chartDataManager.RealTimeDataReceived += OnRealTimeDataReceived;
-            chartDataManager.requestChartData();
+            //chartDataManager.requestChartData();
         }
 
         #endregion

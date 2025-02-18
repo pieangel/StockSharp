@@ -71,7 +71,7 @@ public partial class MainPanel
 
 		Connector = CreateConnector?.Invoke(_defaultDataPath) ?? new Connector();
 		logManager.Sources.Add(Connector);
-		MainWindow.TriggerInitSignalMasterMessageAdapter(); // This will call InitSignalMasterMessageAdapter()
+		//MainWindow.TriggerInitSignalMasterMessageAdapter(); // This will call InitSignalMasterMessageAdapter()
 		InitWeb();
 		InitConnector();
 	}
