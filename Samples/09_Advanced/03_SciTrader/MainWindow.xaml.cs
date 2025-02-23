@@ -42,18 +42,18 @@ using DevExpress.Xpf.DemoCenterBase;
 
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Storages.Csv;
-
+using StockSharp.SignalMaster;
 namespace SciTrader
 {
     public partial class MainWindow : ThemedWindow {
-		private Connector _connector;
+		private Connector _connector = new Connector();
 		public Connector Connector { get; private set; }
 		private const string _connectorFile = "ConnectorFile.json";
 
 		private readonly List<Subscription> _subscriptions = new();
 		//private SecurityId? _selectedSecurityId;
-		/*
-		private SciLeanMessageAdapter slMessageAdapter;
+		
+		private SignalMasterMessageAdapter signalMasterMessageAdapter;
 
 		public class SciLeanIdGenerator : Ecng.Common.IdGenerator
 		{
@@ -69,7 +69,7 @@ namespace SciTrader
 				return Interlocked.Increment(ref _currentId);
 			}
 		}
-		*/
+		
 
 		private static SecureString ToSecureString(string str)
 		{
@@ -92,20 +92,20 @@ namespace SciTrader
 				_connector.Load(_connectorFile.Deserialize<SettingsStorage>());
 			}
 		}
-		/*
+		
 		private void InitSciLeanMessageAdapter()
 		{
-			slMessageAdapter = new SciLeanMessageAdapter(new SciLeanIdGenerator());
+			signalMasterMessageAdapter = new SignalMasterMessageAdapter(new SciLeanIdGenerator());
 			var apiKey = ToSecureString("angelpie"); // Replace with your actual API key
 			var apiSecret = ToSecureString("orion"); // Replace with your actual API secret
 
-			slMessageAdapter.Key = apiKey;
-			slMessageAdapter.Secret = apiSecret;
+			signalMasterMessageAdapter.Key = apiKey;
+			signalMasterMessageAdapter.Secret = apiSecret;
 
 			// Add the Coinbase adapter to the connector
-			_connector.Adapter.InnerAdapters.Add(slMessageAdapter);
+			_connector.Adapter.InnerAdapters.Add(signalMasterMessageAdapter);
 		}
-		*/
+		
 		public static MainWindow Instance { get; private set; }
 		private Connector MainPanel_OnCreateConnector(string path)
 		{
@@ -193,8 +193,8 @@ namespace SciTrader
 				Theme.RegisterPredefinedPaletteThemes();
 				InitializeComponent();
 
-				//InitSciLeanMessageAdapter();
-				//InitConnect();
+				InitSciLeanMessageAdapter();
+				InitConnect();
 			}
 			catch (Exception ex)
 			{
@@ -206,7 +206,7 @@ namespace SciTrader
 		{
 			try
 			{
-				if (_connector.Configure(this))
+				if (_connector.Configure(null))
 				{
 					_connector.Save().Serialize(_connectorFile);
 				}

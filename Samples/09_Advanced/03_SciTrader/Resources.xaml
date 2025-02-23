@@ -195,6 +195,10 @@
         <views:OrderHistoryView BorderThickness="1"/>
     </DataTemplate>
 
+	<DataTemplate DataType="{x:Type viewModels:SecuritiesViewModel}">
+		<views:SecuritiesView BorderThickness="1"/>
+	</DataTemplate>
+
 	<DataTemplate DataType="{x:Type viewModels:ForeignSymbolViewModel}">
 		<views:ForeignSymbolView BorderThickness="1"/>
 	</DataTemplate>

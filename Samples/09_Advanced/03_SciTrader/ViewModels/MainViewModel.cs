@@ -99,6 +99,7 @@ namespace SciTrader.ViewModels {
             HomeSymbolViewModel = CreatePanelWorkspaceViewModel<HomeSymbolViewModel>();
 			DomesticSymbolViewModel = CreatePanelWorkspaceViewModel<DomesticSymbolViewModel>();
 			ForeignSymbolViewModel = CreatePanelWorkspaceViewModel<ForeignSymbolViewModel>();
+			SecuritiesViewModel = CreatePanelWorkspaceViewModel<SecuritiesViewModel>();
 			Bars = new ReadOnlyCollection<BarModel>(CreateBars());
             InitDefaultLayout();
 			//InitSciLeanMessageAdapter();
@@ -153,6 +154,8 @@ namespace SciTrader.ViewModels {
 		public DomesticSymbolViewModel DomesticSymbolViewModel { get; private set; }
 
 		public ForeignSymbolViewModel ForeignSymbolViewModel { get; private set; }
+
+        public SecuritiesViewModel SecuritiesViewModel { get; private set; }
 
 		public SolutionExplorerViewModel SolutionExplorerViewModel {
             get {
@@ -361,6 +364,7 @@ namespace SciTrader.ViewModels {
                 OpenOrdersViewModel, 
                 HomeSymbolViewModel, 
                 DomesticSymbolViewModel, 
+                SecuritiesViewModel,
                 ForeignSymbolViewModel, 
                 SolutionExplorerViewModel, 
                 PropertiesViewModel, 
