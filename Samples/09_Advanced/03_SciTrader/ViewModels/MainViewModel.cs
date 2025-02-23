@@ -321,8 +321,8 @@ namespace SciTrader.ViewModels {
             CommandViewModel closeSolution = new CommandViewModel("Close Solution") { Glyph = Images.CloseSolution };
             save = new CommandViewModel("Save", fileSaveCommand) { Glyph = Images.Save, KeyGesture = new KeyGesture(Key.S, ModifierKeys.Control) };
             saveAll = new CommandViewModel("Save All") { Glyph = Images.SaveAll, KeyGesture = new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift) };
-			ConnectCommandViewModel = new CommandViewModel("Connect", connectCommand) { Glyph = Images.Save, KeyGesture = new KeyGesture(Key.K, ModifierKeys.Control) };
-			settingCommandViewModel = new CommandViewModel("Settings", settingCommand) { Glyph = Images.About, KeyGesture = new KeyGesture(Key.W, ModifierKeys.Control) };
+			ConnectCommandViewModel = new CommandViewModel("Connect", connectCommand) { Glyph = Images.Connect, KeyGesture = new KeyGesture(Key.K, ModifierKeys.Control) };
+			settingCommandViewModel = new CommandViewModel("Settings", settingCommand) { Glyph = Images.Settings, KeyGesture = new KeyGesture(Key.W, ModifierKeys.Control) };
 			return new List<CommandViewModel>() { newCommand, openCommand, GetSeparator(), closeFile, closeSolution, GetSeparator(), save, saveAll, ConnectCommandViewModel, settingCommandViewModel };
         }
         List<CommandViewModel> CreateToolbarCommands() {

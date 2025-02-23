@@ -206,7 +206,7 @@ namespace SciTrader
 		{
 			try
 			{
-				if (_connector.Configure(null))
+				if (_connector.Configure(this))
 				{
 					_connector.Save().Serialize(_connectorFile);
 				}

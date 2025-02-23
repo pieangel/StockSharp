@@ -42,7 +42,11 @@ namespace SciTrader.ViewModels
 		public const string Toolbox = folderSvg + "Toolbox.svg";
 		public const string Undo = folderSvg + "Undo.svg";
 		public const string Warning = folderSvg + "Warning.svg";
+		public const string Connect = folderSvgGen + "Connect.svg";
+		public const string Disconnect = folderSvgGen + "Disconnect.svg";
+		public const string Settings = folderSvgGen + "Settings.svg";
 		const string folderSvg = "pack://application:,,,/SciTrader;component/Images/Docking/";
+		const string folderSvgGen = "pack://application:,,,/SciTrader;component/Images/General/";
 		const string folder = "/SciTrader;component/Images/Docking/";
 	}
 }

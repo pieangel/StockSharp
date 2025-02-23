@@ -46,6 +46,11 @@ namespace SciTrader.ViewModels
 		public static ImageSource Undo { get { return GetSvgImage(ImagePaths.Undo); } }
 		public static ImageSource Warning { get { return GetSvgImage(ImagePaths.Warning); } }
 
+		public static ImageSource Connect { get { return GetSvgImage(ImagePaths.Connect); } }
+		public static ImageSource Disconnect { get { return GetSvgImage(ImagePaths.Disconnect); } }
+		public static ImageSource Settings { get { return GetSvgImage(ImagePaths.Settings); } }
+
+
 		static ImageSource GetImage(string path)
 		{
 			return new BitmapImage(new Uri(path, UriKind.Relative));

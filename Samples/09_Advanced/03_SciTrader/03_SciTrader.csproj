@@ -68,8 +68,10 @@
     <None Remove="Images\General\CheckEdit.svg" />
     <None Remove="Images\General\ColorEdit.svg" />
     <None Remove="Images\General\ComboBox.svg" />
+    <None Remove="Images\General\Connect.svg" />
     <None Remove="Images\General\DataGrid.svg" />
     <None Remove="Images\General\DateEdit.svg" />
+    <None Remove="Images\General\Disconnect.svg" />
     <None Remove="Images\General\GridControl.svg" />
     <None Remove="Images\General\GroupBox.svg" />
     <None Remove="Images\General\ImageEdit.svg" />
@@ -86,6 +88,7 @@
     <None Remove="Images\General\RadioButton.svg" />
     <None Remove="Images\General\RangeControl.svg" />
     <None Remove="Images\General\SchedulerControl.svg" />
+    <None Remove="Images\General\Settings.svg" />
     <None Remove="Images\General\SplitContainerControl.svg" />
     <None Remove="Images\General\SplitterControl.svg" />
     <None Remove="Images\General\SpreadsheetControl.svg" />
@@ -294,12 +297,14 @@
     <Resource Include="Images\General\ComboBox.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\General\Connect.svg" />
     <Resource Include="Images\General\DataGrid.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\General\DateEdit.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\General\Disconnect.svg" />
     <Resource Include="Images\General\GridControl.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -348,6 +353,7 @@
     <Resource Include="Images\General\SchedulerControl.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\General\Settings.svg" />
     <Resource Include="Images\General\SplitContainerControl.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
