@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,9 +43,16 @@ using DevExpress.Xpf.DemoCenterBase;
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Storages.Csv;
 using StockSharp.SignalMaster;
+using SciTrader.ViewModels;
+using System.Reactive.Linq;
+using ReactiveUI;
+
 namespace SciTrader
 {
     public partial class MainWindow : ThemedWindow {
+
+		private IDisposable _subscription;
+
 		private Connector _connector = new Connector();
 		public Connector Connector { get; private set; }
 		private const string _connectorFile = "ConnectorFile.json";
@@ -199,6 +206,32 @@ namespace SciTrader
 			catch (Exception ex)
 			{
 				MessageBox.Show($"XAML error: {ex.Message}");
+			}
+			// ✅ Send MainWindow instance to ViewModel via Messenger
+			Messenger.Default.Send(this, "MainWindowMessage");
+
+			var viewModel = new MainViewModel();
+			DataContext = viewModel;
+
+			// ✅ Subscribe to ViewModel's observable
+			_subscription = viewModel.ViewRequests
+				.ObserveOn(RxApp.MainThreadScheduler) // ✅ FIX: Ensures UI updates on the main thread
+				.Subscribe(OnViewRequestReceived);
+
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			_subscription?.Dispose(); // ✅ Dispose Rx.NET subscription to prevent memory leaks
+		}
+
+		// ✅ Handle received requests from ViewModel
+		private void OnViewRequestReceived(string request)
+		{
+			if (request == "ShowPopup")
+			{
+				MessageBox.Show("This is a popup from ViewModel (Rx.NET)!");
 			}
 		}
 

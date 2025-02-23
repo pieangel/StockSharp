@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,8 +26,13 @@ using DevExpress.Xpf.DemoBase.Helpers.TextColorizer;
 using DevExpress.Xpf.Docking;
 using DevExpress.Xpf.PropertyGrid;
 
-using Ecng.Serialization;
+using Ecng.Common;
 using Ecng.Configuration;
+using Ecng.Serialization;
+using Ecng.Collections;
+using Ecng.Logging;
+
+using Nito.AsyncEx;
 
 using StockSharp.Configuration;
 using StockSharp.Messages;
@@ -37,18 +42,31 @@ using StockSharp.Xaml;
 using System.Threading;
 using System.Security;
 using SciTrader.Network;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+using System.Reactive.Subjects;
+using System.Reactive.Linq;
 
 
 namespace SciTrader.ViewModels {
-    public class MainViewModel {
+    public class MainViewModel
+	{
 
-		private readonly Connector _connector = new();
+		public Connector Connector { get; private set; }
+        private Connector _connector;
 		private const string _connectorFile = "ConnectorFile.json";
+
+		// ✅ Rx.NET Subject that the View will observe
+		private readonly Subject<string> _viewRequestSubject = new();
+
+		// ✅ Expose as an Observable (Only View can listen, but cannot push data)
+		public IObservable<string> ViewRequests => _viewRequestSubject.AsObservable();
 
 		private readonly List<Subscription> _subscriptions = new();
 		//private SecurityId? _selectedSecurityId;
 
-        /*
+		/*
 		private SciLeanMessageAdapter slMessageAdapter;
 
 		public class SciLeanIdGenerator : Ecng.Common.IdGenerator
@@ -67,6 +85,32 @@ namespace SciTrader.ViewModels {
 		}
         */
 
+
+		private bool _isConnected;
+		private Window _mainWindow;
+
+		public ObservableCollection<Security> Securities { get; } = new();
+		public ObservableCollection<Order> Orders { get; } = new();
+		public ObservableCollection<ITickTradeMessage> Trades { get; } = new();
+
+		private string _connectButtonLabel = "Connect";
+
+		public string ConnectButtonLabel
+		{
+			get => _connectButtonLabel;
+			set
+			{
+				_connectButtonLabel = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 
 		public const int Tick = 500;
         CommandViewModel errorList;
@@ -104,7 +148,133 @@ namespace SciTrader.ViewModels {
             InitDefaultLayout();
 			//InitSciLeanMessageAdapter();
 			//InitConnect();
-        }
+
+			// ✅ Register Messenger to receive MainWindow instance
+			Messenger.Default.Register<Window>(this, "MainWindowMessage", window =>
+			{
+				_mainWindow = window;
+				_connector = new Connector(); // ✅ Now we can pass MainWindow
+			});
+
+
+			
+		}
+        /*
+        private void InitConnector()
+        {
+            // subscribe on connection successfully event
+            Connector.Connected += () =>
+            {
+                this.GuiAsync(() => ChangeConnectStatus(true));
+
+                if (Connector.Adapter.IsMarketDataTypeSupported(DataType.News) && !Connector.Adapter.IsSecurityNewsOnly)
+                {
+                    if (Connector.Subscriptions.All(s => s.DataType != DataType.News))
+                        Connector.SubscribeNews();
+                }
+            };
+
+            // subscribe on connection error event
+            Connector.ConnectionError += error => this.GuiAsync(() =>
+            {
+                ChangeConnectStatus(false);
+                MessageBox.Show(this.GetWindow(), error.ToString(), LocalizedStrings.ErrorConnection);
+            });
+
+            Connector.Disconnected += () => this.GuiAsync(() => ChangeConnectStatus(false));
+
+            Connector.ConnectionLost += a => Connector.AddErrorLog(LocalizedStrings.ConnectionLost); ;
+            Connector.ConnectionRestored += a => Connector.AddInfoLog(LocalizedStrings.ConnectionRestored); ;
+
+            // subscribe on error event
+            //Connector.Error += error =>
+            //	this.GuiAsync(() => MessageBox.Show(this, error.ToString(), LocalizedStrings.DataProcessError));
+
+            // subscribe on error of market data subscription event
+            Connector.SubscriptionFailed += (sub, error, isSubscribe) =>
+                this.GuiAsync(() => MessageBox.Show(this.GetWindow(), error.ToString().Truncate(300), LocalizedStrings.ErrorSubDetails.Put(sub.DataType, sub.SecurityId)));
+
+            Connector.SecurityReceived += (s, sec) => _securitiesWindow.SecurityPicker.Securities.Add(sec);
+            Connector.TickTradeReceived += (s, t) => _tradesWindow.TradeGrid.Trades.Add(t);
+            Connector.OrderLogReceived += (s, ol) => _orderLogWindow.OrderLogGrid.LogItems.Add(ol);
+            Connector.Level1Received += (s, l) => _level1Window.Level1Grid.Messages.Add(l);
+
+            Connector.NewOrder += Connector_OnNewOrder;
+            Connector.OrderChanged += Connector_OnOrderChanged;
+            Connector.OrderEdited += Connector_OnOrderEdited;
+
+            Connector.NewMyTrade += _myTradesWindow.TradeGrid.Trades.Add;
+
+            Connector.PositionReceived += (sub, p) => _portfoliosWindow.PortfolioGrid.Positions.TryAdd(p);
+
+            // subscribe on error of order registration event
+            Connector.OrderRegisterFailed += Connector_OnOrderRegisterFailed;
+            // subscribe on error of order cancelling event
+            Connector.OrderCancelFailed += Connector_OnOrderCancelFailed;
+            // subscribe on error of order edition event
+            Connector.OrderEditFailed += Connector_OnOrderEditFailed;
+
+            // set market data provider
+            _securitiesWindow.SecurityPicker.MarketDataProvider = Connector;
+
+            // set news provider
+            _newsWindow.NewsPanel.NewsProvider = Connector;
+
+            Connector.LookupTimeFramesResult += (message, timeFrames, error) =>
+            {
+                if (error == null)
+                    this.GuiAsync(() => _securitiesWindow.UpdateTimeFrames(timeFrames));
+            };
+
+            var nativeIdStorage = ServicesRegistry.TryNativeIdStorage;
+
+            if (nativeIdStorage != null)
+            {
+                Connector.Adapter.NativeIdStorage = nativeIdStorage;
+
+                try
+                {
+                    nativeIdStorage.Init();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this.GetWindow(), ex.ToString());
+                }
+            }
+
+            if (Connector.StorageAdapter != null)
+            {
+                LoggingHelper.DoWithLog(ServicesRegistry.EntityRegistry.Init);
+                LoggingHelper.DoWithLog(ServicesRegistry.ExchangeInfoProvider.Init);
+
+                //Connector.Adapter.StorageSettings.DaysLoad = TimeSpan.FromDays(3);
+                Connector.Adapter.StorageSettings.Mode = StorageModes.Snapshot;
+                Connector.LookupAll();
+
+                Connector.SnapshotRegistry.Init();
+            }
+
+			ConfigManager.RegisterService<IMessageAdapterProvider>(new InMemoryMessageAdapterProvider(Connector.Adapter.InnerAdapters));
+
+			// for show mini chart in SecurityGrid
+			_securitiesWindow.SecurityPicker.PriceChartDataProvider = new PriceChartDataProvider(Connector);
+
+			try
+			{
+				if (_settingsFile.IsConfigExists())
+				{
+					var ctx = new ContinueOnExceptionContext();
+					ctx.Error += ex => ex.LogError();
+
+					using (ctx.ToScope())
+						Connector.LoadIfNotNull(_settingsFile.Deserialize<SettingsStorage>());
+				}
+			}
+			catch
+			{
+			}
+		}
+        */
 
 		private static SecureString ToSecureString(string str)
 		{
@@ -321,8 +491,8 @@ namespace SciTrader.ViewModels {
             CommandViewModel closeSolution = new CommandViewModel("Close Solution") { Glyph = Images.CloseSolution };
             save = new CommandViewModel("Save", fileSaveCommand) { Glyph = Images.Save, KeyGesture = new KeyGesture(Key.S, ModifierKeys.Control) };
             saveAll = new CommandViewModel("Save All") { Glyph = Images.SaveAll, KeyGesture = new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift) };
-			ConnectCommandViewModel = new CommandViewModel("Connect", connectCommand) { Glyph = Images.Connect, KeyGesture = new KeyGesture(Key.K, ModifierKeys.Control) };
-			settingCommandViewModel = new CommandViewModel("Settings", settingCommand) { Glyph = Images.Settings, KeyGesture = new KeyGesture(Key.W, ModifierKeys.Control) };
+			ConnectCommandViewModel = new CommandViewModel("Connect", connectCommand) { Glyph = Images.Connect, KeyGesture = new KeyGesture(Key.K, ModifierKeys.Control), DisplayMode = BarItemDisplayMode.ContentAndGlyph };
+			settingCommandViewModel = new CommandViewModel("Settings", settingCommand) { Glyph = Images.Settings, KeyGesture = new KeyGesture(Key.W, ModifierKeys.Control), DisplayMode = BarItemDisplayMode.ContentAndGlyph };
 			return new List<CommandViewModel>() { newCommand, openCommand, GetSeparator(), closeFile, closeSolution, GetSeparator(), save, saveAll, ConnectCommandViewModel, settingCommandViewModel };
         }
         List<CommandViewModel> CreateToolbarCommands() {
@@ -401,6 +571,11 @@ namespace SciTrader.ViewModels {
 
 		void Setting_Click(object param)
 		{
+			// ✅ Push a message to notify the View
+			_viewRequestSubject.OnNext("ShowPopup");
+
+            return;
+
 			var mainWindow = Application.Current.MainWindow; // Get the current main window
 			if (_connector.Configure(mainWindow)) // Pass the window instead of ViewModel
 			{

@@ -74,6 +74,7 @@
     <None Remove="Images\General\Disconnect.svg" />
     <None Remove="Images\General\GridControl.svg" />
     <None Remove="Images\General\GroupBox.svg" />
+    <None Remove="Images\General\Hide.svg" />
     <None Remove="Images\General\ImageEdit.svg" />
     <None Remove="Images\General\Label.svg" />
     <None Remove="Images\General\ListBox.svg" />
@@ -89,12 +90,14 @@
     <None Remove="Images\General\RangeControl.svg" />
     <None Remove="Images\General\SchedulerControl.svg" />
     <None Remove="Images\General\Settings.svg" />
+    <None Remove="Images\General\Show.svg" />
     <None Remove="Images\General\SplitContainerControl.svg" />
     <None Remove="Images\General\SplitterControl.svg" />
     <None Remove="Images\General\SpreadsheetControl.svg" />
     <None Remove="Images\General\TabControl.svg" />
     <None Remove="Images\General\TableLayoutPanel.svg" />
     <None Remove="Images\General\TextEdit.svg" />
+    <None Remove="Images\General\Theme.svg" />
     <None Remove="Images\General\ToggleSwitch.svg" />
     <None Remove="Images\General\ToggleSwitchEdit.svg" />
   </ItemGroup>
@@ -311,6 +314,7 @@
     <Resource Include="Images\General\GroupBox.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\General\Hide.svg" />
     <Resource Include="Images\General\ImageEdit.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -354,6 +358,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\General\Settings.svg" />
+    <Resource Include="Images\General\Show.svg" />
     <Resource Include="Images\General\SplitContainerControl.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -372,6 +377,7 @@
     <Resource Include="Images\General\TextEdit.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\General\Theme.svg" />
     <Resource Include="Images\General\ToggleSwitch.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -382,12 +388,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.12.0" />
     <PackageReference Include="NLog" Version="5.4.0" />
+    <PackageReference Include="ReactiveUI" Version="20.1.63" />
     <PackageReference Include="SciChart" Version="8.6.0.28199" />
     <PackageReference Include="SciChart.DrawingTools" Version="8.6.0.28199" />
     <PackageReference Include="SciChart.ExternalDependencies" Version="8.6.0.28199" />
     <PackageReference Include="SciChart3D" Version="8.6.0.28199" />
     <PackageReference Include="StockSharp.Xaml.Charting" Version="$(StockSharpVer)" />
     <PackageReference Include="StockSharp.Studio.WebApi.UI" Version="$(StockSharpVer)" />
+    <PackageReference Include="System.Reactive" Version="6.0.1" />
     <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>

@@ -50,6 +50,11 @@ namespace SciTrader.ViewModels
 		public static ImageSource Disconnect { get { return GetSvgImage(ImagePaths.Disconnect); } }
 		public static ImageSource Settings { get { return GetSvgImage(ImagePaths.Settings); } }
 
+		public static ImageSource Show { get { return GetSvgImage(ImagePaths.Show); } }
+
+		public static ImageSource Hide { get { return GetSvgImage(ImagePaths.Hide); } }
+		public static ImageSource Theme { get { return GetSvgImage(ImagePaths.Theme); } }
+
 
 		static ImageSource GetImage(string path)
 		{

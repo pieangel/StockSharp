@@ -45,6 +45,9 @@ namespace SciTrader.ViewModels
 		public const string Connect = folderSvgGen + "Connect.svg";
 		public const string Disconnect = folderSvgGen + "Disconnect.svg";
 		public const string Settings = folderSvgGen + "Settings.svg";
+		public const string Show = folderSvgGen + "Show.svg";
+		public const string Hide = folderSvgGen + "Hide.svg";
+		public const string Theme = folderSvgGen + "Theme.svg";
 		const string folderSvg = "pack://application:,,,/SciTrader;component/Images/Docking/";
 		const string folderSvgGen = "pack://application:,,,/SciTrader;component/Images/General/";
 		const string folder = "/SciTrader;component/Images/Docking/";
