@@ -46,13 +46,14 @@ using StockSharp.SignalMaster;
 using SciTrader.ViewModels;
 using System.Reactive.Linq;
 using ReactiveUI;
+using System.Reactive.Subjects;
 
 namespace SciTrader
 {
     public partial class MainWindow : ThemedWindow {
 
 		private IDisposable _subscription;
-
+		private readonly MainViewModel _viewModel;
 		private Connector _connector = new Connector();
 		public Connector Connector { get; private set; }
 		private const string _connectorFile = "ConnectorFile.json";
@@ -202,22 +203,64 @@ namespace SciTrader
 
 				InitSciLeanMessageAdapter();
 				InitConnect();
+
+				_viewModel = new MainViewModel();
+				DataContext = _viewModel;
+
+				// ✅ Set MainWindow instance in ViewModel
+				_viewModel.SetMainWindow(this);
+
+				// ✅ Subscribe to ViewModel events using Rx.NET
+				_subscription = _viewModel.EventObservable
+					.ObserveOn(RxApp.MainThreadScheduler) // Ensure UI thread safety
+					.Subscribe(OnEventReceived);
+
+				// ✅ Subscribe to Subscription Errors
+				_viewModel.SubscriptionErrorObservable
+					.ObserveOn(RxApp.MainThreadScheduler) // Ensure UI thread safety
+					.Subscribe(ShowSubscriptionError);
+
+				// ✅ UI updates on the main thread
+				_viewModel.SecurityReceivedObservable
+					.ObserveOn(RxApp.MainThreadScheduler)
+					.Subscribe(sec =>
+					{
+						;// SecurityPicker.Securities.Add(sec);
+					});
+
+				_viewModel.TimeFramesObservable
+				.ObserveOn(RxApp.MainThreadScheduler) // ✅ Ensure UI updates run on the main thread
+				.Subscribe(timeFrames =>
+				{
+					; //_securitiesWindow.UpdateTimeFrames(timeFrames);
+				});
+
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show($"XAML error: {ex.Message}");
 			}
-			// ✅ Send MainWindow instance to ViewModel via Messenger
-			Messenger.Default.Send(this, "MainWindowMessage");
+			
+		}
 
-			var viewModel = new MainViewModel();
-			DataContext = viewModel;
+		// ✅ UI Logic: Show Error MessageBox
+		private void ShowSubscriptionError(SubscriptionErrorEvent errorEvent)
+		{
+			MessageBox.Show(this, errorEvent.ErrorMessage,
+				$"Subscription Error - {errorEvent.DataType} ({errorEvent.SecurityId})",
+				MessageBoxButton.OK, MessageBoxImage.Error);
+		}
 
-			// ✅ Subscribe to ViewModel's observable
-			_subscription = viewModel.ViewRequests
-				.ObserveOn(RxApp.MainThreadScheduler) // ✅ FIX: Ensures UI updates on the main thread
-				.Subscribe(OnViewRequestReceived);
+		private void OnEventReceived(EventData<object> eventData)
+		{
+			if (eventData == null) return;
 
+			switch (eventData.Type)
+			{
+				case "ShowSettingsPopup":
+					MessageBox.Show("Settings dialog should appear here!");
+					break;
+			}
 		}
 
 		protected override void OnClosed(EventArgs e)

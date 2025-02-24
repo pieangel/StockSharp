@@ -1423,7 +1423,7 @@ partial class TraderHelper
 
 			var direction = (order.Side == Sides.Buy) ? 1m : -1m;
 
-			//≈сли открываемс€ или переворачиваемс€
+			//≈сли открываемс€ ил?переворачиваем?
 			if (direction != denominator.Sign() && trade.Volume > denominator.Abs())
 			{
 				var newVolume = trade.Volume - denominator.Abs();
@@ -1432,7 +1432,7 @@ partial class TraderHelper
 			}
 			else
 			{
-				//≈сли добавл€емс€ в сторону уже открытой позиции
+				//≈сли добавл€ем? ?сторон?уж?открытой позици?
 				if (direction == denominator.Sign())
 					numerator += direction * trade.Price * trade.Volume;
 				else

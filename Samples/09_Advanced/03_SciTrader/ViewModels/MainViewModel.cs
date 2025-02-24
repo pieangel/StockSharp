@@ -47,11 +47,17 @@ using System.Runtime.CompilerServices;
 
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using StockSharp.Localization;
+using StockSharp.Algo.Storages;
 
 
 namespace SciTrader.ViewModels {
     public class MainViewModel
 	{
+
+		// ✅ Rx.NET Subject for event-driven communication
+		private readonly Subject<EventData<object>> _eventSubject = new();
+		public IObservable<EventData<object>> EventObservable => _eventSubject.AsObservable();
 
 		public Connector Connector { get; private set; }
         private Connector _connector;
@@ -123,12 +129,16 @@ namespace SciTrader.ViewModels {
         CommandViewModel output;
         CommandViewModel properties;
         CommandViewModel save;
-        CommandViewModel ConnectCommandViewModel;
+        //CommandViewModel ConnectCommandViewModel;
         CommandViewModel saveAll;
         CommandViewModel saveLayout;
         CommandViewModel searchResults;
         CommandViewModel solutionExplorer;
-		CommandViewModel settingCommandViewModel;
+		//CommandViewModel settingCommandViewModel;
+
+		public CommandViewModel ConnectCommandViewModel { get; private set; }
+		public CommandViewModel SettingsCommandViewModel { get; private set; }
+
 		SolutionExplorerViewModel solutionExplorerViewModel;
         CommandViewModel toolbox;
         ObservableCollection<WorkspaceViewModel> workspaces;
@@ -159,42 +169,81 @@ namespace SciTrader.ViewModels {
 
 			
 		}
-        /*
-        private void InitConnector()
+
+		private readonly string _defaultDataPath = "Data";
+		private readonly string _settingsFile;
+
+		private readonly Subject<bool> _connectionStatusSubject = new();
+		public IObservable<bool> ConnectionStatusObservable => _connectionStatusSubject.AsObservable();
+
+		private readonly Subject<SubscriptionErrorEvent> _subscriptionErrorSubject = new();
+		public IObservable<SubscriptionErrorEvent> SubscriptionErrorObservable => _subscriptionErrorSubject.AsObservable();
+
+		// ✅ Rx.NET Subject for Security Events
+		private readonly Subject<Security> _securityReceivedSubject = new();
+
+		public IObservable<Security> SecurityReceivedObservable => _securityReceivedSubject.AsObservable();
+
+		// ✅ Rx.NET Subject for TimeFrames
+		private readonly Subject<List<TimeSpan>> _timeFramesSubject = new();
+
+		public IObservable<List<TimeSpan>> TimeFramesObservable => _timeFramesSubject.AsObservable();
+
+		private void InitConnector()
         {
-            // subscribe on connection successfully event
-            Connector.Connected += () =>
-            {
-                this.GuiAsync(() => ChangeConnectStatus(true));
+			Connector.Connected += () =>
+			{
+				_connectionStatusSubject.OnNext(true); // 🔴 Notify the View about connection status
 
-                if (Connector.Adapter.IsMarketDataTypeSupported(DataType.News) && !Connector.Adapter.IsSecurityNewsOnly)
-                {
-                    if (Connector.Subscriptions.All(s => s.DataType != DataType.News))
-                        Connector.SubscribeNews();
-                }
-            };
+				if (Connector.Adapter.IsMarketDataTypeSupported(DataType.News) && !Connector.Adapter.IsSecurityNewsOnly)
+				{
+					if (Connector.Subscriptions.All(s => s.DataType != DataType.News))
+						Connector.SubscribeNews();
+				}
+			};
 
-            // subscribe on connection error event
-            Connector.ConnectionError += error => this.GuiAsync(() =>
-            {
-                ChangeConnectStatus(false);
-                MessageBox.Show(this.GetWindow(), error.ToString(), LocalizedStrings.ErrorConnection);
-            });
+			Connector.ConnectionError += error =>
+			{
+				_connectionStatusSubject.OnNext(false); // 🔴 Notify View about error
+			};
 
-            Connector.Disconnected += () => this.GuiAsync(() => ChangeConnectStatus(false));
+			Connector.Disconnected += () =>
+			{
+				_connectionStatusSubject.OnNext(false); // 🔴 Notify View about disconnection
+			};
 
-            Connector.ConnectionLost += a => Connector.AddErrorLog(LocalizedStrings.ConnectionLost); ;
+			Connector.ConnectionLost += a => Connector.AddErrorLog(LocalizedStrings.ConnectionLost); ;
             Connector.ConnectionRestored += a => Connector.AddInfoLog(LocalizedStrings.ConnectionRestored); ;
 
-            // subscribe on error event
-            //Connector.Error += error =>
-            //	this.GuiAsync(() => MessageBox.Show(this, error.ToString(), LocalizedStrings.DataProcessError));
+			// subscribe on error event
+			//Connector.Error += error =>
+			//	this.GuiAsync(() => MessageBox.Show(this, error.ToString(), LocalizedStrings.DataProcessError));
 
-            // subscribe on error of market data subscription event
-            Connector.SubscriptionFailed += (sub, error, isSubscribe) =>
-                this.GuiAsync(() => MessageBox.Show(this.GetWindow(), error.ToString().Truncate(300), LocalizedStrings.ErrorSubDetails.Put(sub.DataType, sub.SecurityId)));
+			// subscribe on error of market data subscription event
+			Connector.SubscriptionFailed += (sub, error, isSubscribe) =>
+			{
+				// 🔴 Notify the View about the error instead of showing MessageBox
+				_subscriptionErrorSubject.OnNext(new SubscriptionErrorEvent
+				{
+					DataType = sub.DataType,
+					SecurityId = (SecurityId)sub.SecurityId,
+					ErrorMessage = error.ToString().Truncate(300)
+				});
+			};
 
-            Connector.SecurityReceived += (s, sec) => _securitiesWindow.SecurityPicker.Securities.Add(sec);
+
+
+			/*
+             * What Happens in Runtime?
+               The Connector receives new security data from the market.
+               The SecurityReceived event is triggered.
+               The event handler (s, sec) => _securitiesWindow.SecurityPicker.Securities.Add(sec); executes.
+               The security (sec) is added to the UI's SecurityPicker.
+            */
+			// ✅ Event Subscription
+			Connector.SecurityReceived += (s, sec) => _securityReceivedSubject.OnNext(sec);
+			/*
+			Connector.SecurityReceived += (s, sec) => _securitiesWindow.SecurityPicker.Securities.Add(sec);
             Connector.TickTradeReceived += (s, t) => _tradesWindow.TradeGrid.Trades.Add(t);
             Connector.OrderLogReceived += (s, ol) => _orderLogWindow.OrderLogGrid.LogItems.Add(ol);
             Connector.Level1Received += (s, l) => _level1Window.Level1Grid.Messages.Add(l);
@@ -206,27 +255,29 @@ namespace SciTrader.ViewModels {
             Connector.NewMyTrade += _myTradesWindow.TradeGrid.Trades.Add;
 
             Connector.PositionReceived += (sub, p) => _portfoliosWindow.PortfolioGrid.Positions.TryAdd(p);
+            */
 
-            // subscribe on error of order registration event
-            Connector.OrderRegisterFailed += Connector_OnOrderRegisterFailed;
+			// subscribe on error of order registration event
+			Connector.OrderRegisterFailed += Connector_OnOrderRegisterFailed;
             // subscribe on error of order cancelling event
             Connector.OrderCancelFailed += Connector_OnOrderCancelFailed;
             // subscribe on error of order edition event
             Connector.OrderEditFailed += Connector_OnOrderEditFailed;
 
-            // set market data provider
-            _securitiesWindow.SecurityPicker.MarketDataProvider = Connector;
+			// set market data provider
+			//_securitiesWindow.SecurityPicker.MarketDataProvider = Connector;
 
-            // set news provider
-            _newsWindow.NewsPanel.NewsProvider = Connector;
+			// set news provider
+			//_newsWindow.NewsPanel.NewsProvider = Connector;
 
-            Connector.LookupTimeFramesResult += (message, timeFrames, error) =>
-            {
-                if (error == null)
-                    this.GuiAsync(() => _securitiesWindow.UpdateTimeFrames(timeFrames));
-            };
+			// ✅ Event Subscription in ViewModel
+			Connector.LookupTimeFramesResult += (message, timeFrames, error) =>
+			{
+				if (error == null)
+					_timeFramesSubject.OnNext(timeFrames.ToList()); // Emit time frames
+			};
 
-            var nativeIdStorage = ServicesRegistry.TryNativeIdStorage;
+			var nativeIdStorage = ServicesRegistry.TryNativeIdStorage;
 
             if (nativeIdStorage != null)
             {
@@ -238,7 +289,7 @@ namespace SciTrader.ViewModels {
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(this.GetWindow(), ex.ToString());
+                    MessageBox.Show(_mainWindow, ex.ToString());
                 }
             }
 
@@ -257,7 +308,7 @@ namespace SciTrader.ViewModels {
 			ConfigManager.RegisterService<IMessageAdapterProvider>(new InMemoryMessageAdapterProvider(Connector.Adapter.InnerAdapters));
 
 			// for show mini chart in SecurityGrid
-			_securitiesWindow.SecurityPicker.PriceChartDataProvider = new PriceChartDataProvider(Connector);
+			//_securitiesWindow.SecurityPicker.PriceChartDataProvider = new PriceChartDataProvider(Connector);
 
 			try
 			{
@@ -272,9 +323,30 @@ namespace SciTrader.ViewModels {
 			}
 			catch
 			{
+				// ignore
 			}
 		}
-        */
+
+		private void Connector_OnOrderRegisterFailed(OrderFail fail)
+		{
+			//_ordersWindow.OrderGrid.AddRegistrationFail(fail);
+			//_securitiesWindow.ProcessOrderFail(fail);
+		}
+
+		private void Connector_OnOrderEditFailed(long transactionId, OrderFail fail)
+		{
+			//_securitiesWindow.ProcessOrderFail(fail);
+		}
+
+		private void Connector_OnOrderCancelFailed(OrderFail fail)
+		{
+			//_securitiesWindow.ProcessOrderFail(fail);
+
+// 			this.GuiAsync(() =>
+// 			{
+// 				MessageBox.Show(this.GetWindow(), fail.Error.ToString(), LocalizedStrings.OrderError);
+// 			});
+		}
 
 		private static SecureString ToSecureString(string str)
 		{
@@ -470,8 +542,8 @@ namespace SciTrader.ViewModels {
             var fileExecutedCommand = new DelegateCommand<object>(OnNewFileExecuted);
             var fileOpenCommand = new DelegateCommand<object>(OnFileOpenExecuted);
             var fileSaveCommand = new DelegateCommand<object>(OnSave);
-            var connectCommand = new DelegateCommand<object>(OnConnect);
-            var settingCommand = new DelegateCommand<object>(Setting_Click);
+            //var connectCommand = new DelegateCommand<object>(OnConnect);
+            //var settingCommand = new DelegateCommand<object>(Setting_Click);
 
 			CommandViewModel newCommand = new CommandViewModel("New") { IsSubItem = true };
             newProject = new CommandViewModel("Project...", fileExecutedCommand) { Glyph = Images.NewProject, KeyGesture = new KeyGesture(Key.N, ModifierKeys.Control | ModifierKeys.Shift), IsEnabled = false };
@@ -491,9 +563,25 @@ namespace SciTrader.ViewModels {
             CommandViewModel closeSolution = new CommandViewModel("Close Solution") { Glyph = Images.CloseSolution };
             save = new CommandViewModel("Save", fileSaveCommand) { Glyph = Images.Save, KeyGesture = new KeyGesture(Key.S, ModifierKeys.Control) };
             saveAll = new CommandViewModel("Save All") { Glyph = Images.SaveAll, KeyGesture = new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift) };
-			ConnectCommandViewModel = new CommandViewModel("Connect", connectCommand) { Glyph = Images.Connect, KeyGesture = new KeyGesture(Key.K, ModifierKeys.Control), DisplayMode = BarItemDisplayMode.ContentAndGlyph };
-			settingCommandViewModel = new CommandViewModel("Settings", settingCommand) { Glyph = Images.Settings, KeyGesture = new KeyGesture(Key.W, ModifierKeys.Control), DisplayMode = BarItemDisplayMode.ContentAndGlyph };
-			return new List<CommandViewModel>() { newCommand, openCommand, GetSeparator(), closeFile, closeSolution, GetSeparator(), save, saveAll, ConnectCommandViewModel, settingCommandViewModel };
+			//ConnectCommandViewModel = new CommandViewModel("Connect", connectCommand) { Glyph = Images.Connect, KeyGesture = new KeyGesture(Key.K, ModifierKeys.Control), DisplayMode = BarItemDisplayMode.ContentAndGlyph };
+			//SettingsCommandViewModel = new CommandViewModel("Settings", settingCommand) { Glyph = Images.Settings, KeyGesture = new KeyGesture(Key.W, ModifierKeys.Control), DisplayMode = BarItemDisplayMode.ContentAndGlyph };
+
+			// ✅ Initialize Commands with Rx.NET Integration
+			ConnectCommandViewModel = new CommandViewModel("Connect", new DelegateCommand<object>(OnConnect))
+			{
+				Glyph = Images.Connect,
+				KeyGesture = new KeyGesture(Key.K, ModifierKeys.Control),
+				DisplayMode = BarItemDisplayMode.ContentAndGlyph
+			};
+
+			SettingsCommandViewModel = new CommandViewModel("Settings", new DelegateCommand<object>(OnSettings))
+			{
+				Glyph = Images.Settings,
+				KeyGesture = new KeyGesture(Key.W, ModifierKeys.Control),
+				DisplayMode = BarItemDisplayMode.ContentAndGlyph
+			};
+
+			return new List<CommandViewModel>() { newCommand, openCommand, GetSeparator(), closeFile, closeSolution, GetSeparator(), save, saveAll, ConnectCommandViewModel, SettingsCommandViewModel };
         }
         List<CommandViewModel> CreateToolbarCommands() {
             CommandViewModel start = new CommandViewModel("Start") {
@@ -512,7 +600,7 @@ namespace SciTrader.ViewModels {
             CommandViewModel redo = new CommandViewModel("Redo") { Glyph = Images.Redo, KeyGesture = new KeyGesture(Key.Y, ModifierKeys.Control) };
 
             return new List<CommandViewModel>() {
-				settingCommandViewModel, ConnectCommandViewModel, newProject, newFile, openFile, save, saveAll, GetSeparator(), combo, start,
+				SettingsCommandViewModel, ConnectCommandViewModel, newProject, newFile, openFile, save, saveAll, GetSeparator(), combo, start,
                 GetSeparator(), cut, copy, paste, GetSeparator(), undo, redo, GetSeparator(),
                 toolbox, solutionExplorer, properties, errorList, output, searchResults,
                 GetSeparator(), loadLayout, saveLayout
@@ -569,29 +657,51 @@ namespace SciTrader.ViewModels {
 
 
 
-		void Setting_Click(object param)
+		void OnSettings(object param)
 		{
-			// ✅ Push a message to notify the View
-			_viewRequestSubject.OnNext("ShowPopup");
+			// ✅ Push an event for UI updates (e.g., Show Settings Popup)
+			_eventSubject.OnNext(new EventData<object> { Type = "ShowSettingsPopup", Data = null });
 
-            return;
-
-			var mainWindow = Application.Current.MainWindow; // Get the current main window
-			if (_connector.Configure(mainWindow)) // Pass the window instead of ViewModel
+			if (_mainWindow != null && _connector.Configure(_mainWindow))
 			{
-				_connector.Save().Serialize(_connectorFile);
+				_connector.Save().Serialize("ConnectorSettings.json");
 			}
+		}
+
+
+		// ✅ Set the MainWindow instance from outside (instead of Messenger)
+		public void SetMainWindow(Window window)
+		{
+			_mainWindow = window;
+		}
+
+
+		private void ChangeConnectStatus(bool isConnected)
+		{
+			_isConnected = isConnected;
+			ConnectButtonLabel = _isConnected ? "Disconnect" : "Connect";
 		}
 
 
 		void OnConnect(object param)
         {
 			_connector.Connected += Connector_Connected;
-			_connector.Connect();
+			//_connector.Connect();
+
+			if (_isConnected)
+			{
+				_connector.Disconnect();
+			}
+			else
+			{
+				_connector.Connect();
+				//_connector.LookupSecurities(StockSharp.Messages.Extensions.LookupAllCriteriaMessage);
+			}
 		}
 
 		private void Connector_Connected()
 		{
+			ConnectCommandViewModel.Glyph = Images.Disconnect;
 			// try lookup all securities
 			_connector.LookupSecurities(StockSharp.Messages.Extensions.LookupAllCriteriaMessage);
 		}
