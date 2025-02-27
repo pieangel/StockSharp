@@ -292,5 +292,10 @@ namespace SciTrader
 				MessageBox.Show($"Error: {ex.Message}");
 			}
 		}
+
+		public void ChangeConnectStatus(bool isConnected)
+		{
+			// Change the connection status
+		}
 	}
 }
