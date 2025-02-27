@@ -343,17 +343,18 @@ public partial class TinkoffMessageAdapter
 
 			_ = Task.Run(async () =>
 			{
-				var currError = 0;
+				var currentDelay = _baseDelay;
 
 				while (!cancellationToken.IsCancellationRequested)
 				{
 					try
 					{
 						var statesStream = _service.OrdersStream.OrderStateStream(new(), cancellationToken: statesToken).ResponseStream;
-						currError = 0;
 
 						await foreach (var response in statesStream.ReadAllAsync(statesToken))
 						{
+							currentDelay = _baseDelay;
+
 							var orderState = response.OrderState;
 
 							if (orderState is null)
@@ -402,8 +403,8 @@ public partial class TinkoffMessageAdapter
 
 						this.AddErrorLog(ex);
 
-						if (++currError >= 10)
-							break;
+						currentDelay = GetCurrentDelay(currentDelay);
+						await currentDelay.Delay(cancellationToken);
 					}
 				}
 			}, statesToken);
@@ -495,17 +496,18 @@ public partial class TinkoffMessageAdapter
 
 			_ = Task.Run(async () =>
 			{
-				var currError = 0;
+				var currentDelay = _baseDelay;
 
 				while (!cancellationToken.IsCancellationRequested)
 				{
 					try
 					{
 						var pfStream = _service.OperationsStream.PortfolioStream(new() { Accounts = { _accountIds } }, cancellationToken: pfToken).ResponseStream;
-						currError = 0;
 
 						await foreach (var response in pfStream.ReadAllAsync(pfToken))
 						{
+							currentDelay = _baseDelay;
+
 							if (response.Portfolio is PortfolioResponse portfolio)
 								processResponse(portfolio);
 						}
@@ -517,25 +519,26 @@ public partial class TinkoffMessageAdapter
 
 						this.AddErrorLog(ex);
 
-						if (++currError >= 10)
-							break;
+						currentDelay = GetCurrentDelay(currentDelay);
+						await currentDelay.Delay(cancellationToken);
 					}
 				}
 			}, pfToken);
 
 			_ = Task.Run(async () =>
 			{
-				var currError = 0;
+				var currentDelay = _baseDelay;
 
 				while (!cancellationToken.IsCancellationRequested)
 				{
 					try
 					{
 						var posStream = _service.OperationsStream.PositionsStream(new() { Accounts = { _accountIds } }, cancellationToken: pfToken).ResponseStream;
-						currError = 0;
 
 						await foreach (var response in posStream.ReadAllAsync(pfToken))
 						{
+							currentDelay = _baseDelay;
+
 							if (response.Position is PositionData position)
 							{
 								var time = position.Date.ToDateTime();
@@ -618,8 +621,8 @@ public partial class TinkoffMessageAdapter
 
 						this.AddErrorLog(ex);
 
-						if (++currError >= 10)
-							break;
+						currentDelay = GetCurrentDelay(currentDelay);
+						await currentDelay.Delay(cancellationToken);
 					}
 				}
 			}, pfToken);

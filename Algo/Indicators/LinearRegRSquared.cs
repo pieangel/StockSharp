@@ -4,13 +4,13 @@ namespace StockSharp.Algo.Indicators;
 /// Linear regression R-squared.
 /// </summary>
 /// <remarks>
-/// https://doc.stocksharp.com/topics/IndicatorLinearRegRSquared.html
+/// https://doc.stocksharp.com/topics/api/indicators/list_of_indicators/linear_reg_rsquared.html
 /// </remarks>
 [Display(
 	ResourceType = typeof(LocalizedStrings),
 	Name = LocalizedStrings.RSquaredKey,
 	Description = LocalizedStrings.LinearRegRSquaredKey)]
-[Doc("topics/IndicatorLinearRegRSquared.html")]
+[Doc("topics/api/indicators/list_of_indicators/linear_reg_rsquared.html")]
 public class LinearRegRSquared : LengthIndicator<decimal>
 {
 	// Коэффициент при независимой переменной, угол наклона прямой.
