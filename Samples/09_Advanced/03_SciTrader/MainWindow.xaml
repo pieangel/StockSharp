@@ -18,8 +18,7 @@
                  UseLayoutRounding="True"
                  Padding="0"
                  Height="650"
-                 Width="1000"
-                 DataContext="{dxmvvm:ViewModelSource Type=viewModels:MainViewModel}">
+                 Width="1000" >
     <dx:ThemedWindow.ToolbarItems>
         <dxb:MainMenuControl VerticalAlignment="Center"/>
         <dxe:SearchControl NullText="Quick Launch" ShowMRUButton="False" ShowFindButton="True" Height="22" Margin="4,0,6,0" Width="200"/>

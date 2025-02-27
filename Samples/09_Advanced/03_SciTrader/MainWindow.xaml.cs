@@ -190,7 +190,8 @@ namespace SciTrader
 		}
 
 
-		public MainWindow() {
+		public MainWindow(MainViewModel viewModel)
+		{
 			Instance = this;
 			try
 			{
@@ -204,7 +205,7 @@ namespace SciTrader
 				InitSciLeanMessageAdapter();
 				InitConnect();
 
-				_viewModel = new MainViewModel();
+				_viewModel = viewModel;
 				DataContext = _viewModel;
 
 				// ✅ Set MainWindow instance in ViewModel
