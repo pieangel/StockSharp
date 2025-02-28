@@ -37,13 +37,20 @@ using StockSharp.Xaml;
 using System.Threading;
 using System.Security;
 using SciTrader.Network;
+using SciTrader.Services;
 
 
 namespace SciTrader.ViewModels {
     public class MainViewModel {
 
-		private readonly Connector _connector = new();
+		private Connector _connector;
+		private MainWindow _mainWindow;
+
 		private const string _connectorFile = "ConnectorFile.json";
+
+
+
+
 
 		private readonly List<Subscription> _subscriptions = new();
 		//private SecurityId? _selectedSecurityId;
@@ -109,6 +116,21 @@ namespace SciTrader.ViewModels {
 			//InitSciLeanMessageAdapter();
 			//InitConnect();
         }
+
+        private void InitEventBus()
+        {
+			EventBus.Instance.MainWindowObservable
+		        .Subscribe(window =>
+		        {
+			        _mainWindow = window as MainWindow;
+		        });
+
+			EventBus.Instance.ConnectorObservable
+				.Subscribe(connector =>
+				{
+					_connector = connector;
+				});
+		}
 
 		private static SecureString ToSecureString(string str)
 		{

@@ -42,6 +42,7 @@ using DevExpress.Xpf.DemoCenterBase;
 
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Storages.Csv;
+using SciTrader.Services;
 
 namespace SciTrader
 {
@@ -192,6 +193,9 @@ namespace SciTrader
 				Theme.CachePaletteThemes = true;
 				Theme.RegisterPredefinedPaletteThemes();
 				InitializeComponent();
+
+				EventBus.Instance.PublishMainWindow(this);
+				EventBus.Instance.PublishConnector(ConnectorService.Instance.Connector);
 
 				//InitSciLeanMessageAdapter();
 				//InitConnect();

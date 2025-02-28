@@ -16,7 +16,7 @@ namespace SciTrader.Services
 		public PortfolioService(ConnectorService connectorService)
 		{
 			_connectorService = connectorService;
-			var connector = _connectorService.TradingConnector;
+			var connector = _connectorService.Connector;
 
 			connector.PositionReceived += (sub, p) => Console.WriteLine($"Position Received: {p.CurrentValue}");
 		}

@@ -15,7 +15,7 @@ namespace SciTrader.Services
 		public OrderService(ConnectorService connectorService)
 		{
 			_connectorService = connectorService;
-			var connector = _connectorService.TradingConnector;
+			var connector = _connectorService.Connector;
 
 			// Order Events
 			connector.NewOrder += Connector_OnNewOrder;
@@ -35,7 +35,7 @@ namespace SciTrader.Services
 				Type = OrderTypes.Limit
 			};
 
-			_connectorService.TradingConnector.RegisterOrder(order);
+			_connectorService.Connector.RegisterOrder(order);
 		}
 
 		private void Connector_OnNewOrder(Order order) => Console.WriteLine($"New Order: {order.Security.Code}");

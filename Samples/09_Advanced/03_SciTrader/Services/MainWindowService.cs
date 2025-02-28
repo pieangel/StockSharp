@@ -9,28 +9,15 @@ namespace SciTrader.Services
 {
 	public class MainWindowService
 	{
-		private readonly MainWindow _mainWindow;
+		public static MainWindowService Instance { get; } = new();
+		private MainWindow? _mainWindow;
 
-		public MainWindowService(MainWindow mainWindow)
+		public void SetMainWindow(MainWindow window)
 		{
-			_mainWindow = mainWindow;
+			_mainWindow = window;
 		}
 
-		public void ShowMessage(string message, string title = "Notification")
-		{
-			_mainWindow.Dispatcher.Invoke(() =>
-			{
-				MessageBox.Show(_mainWindow, message, title);
-			});
-		}
-
-		public void ChangeConnectionStatus(bool isConnected)
-		{
-			_mainWindow.Dispatcher.Invoke(() =>
-			{
-				//_mainWindow.ChangeConnectStatus(isConnected);
-			});
-		}
+		public MainWindow? GetMainWindow() => _mainWindow;
 	}
 
 }
