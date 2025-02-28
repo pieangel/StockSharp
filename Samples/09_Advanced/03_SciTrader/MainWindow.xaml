@@ -101,7 +101,7 @@
 
 			<!-- Status Bar -->
 			<dxb:StatusBarControl HideWhenEmpty="False" Caption="StatusBar" AllowCustomizationMenu="False" Grid.Row="1">
-                <dxb:BarStaticItem Content="Ready"/>
+				<dxb:BarStaticItem Content="{Binding StatusMessage}"/>
             </dxb:StatusBarControl>
 			<!--<Button Grid.Row="2" Width="80" x:Name="Setting" Content="Setting" Click="Setting_Click" />-->
         </Grid>

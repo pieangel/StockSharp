@@ -50,7 +50,7 @@ namespace SciTrader.Model
             _webSocketClient.OnPriceSeriesReceived += OnPriceSeriesReceived;
             _webSocketClient.OnRealTimeDataReceived += OnRealTimeDataReceived;
             _webSocketClient.OnDisconnected += OnDisconnected;
-            _webSocketClient.Connect();
+            //_webSocketClient.Connect();
             //InitializeTimer(); // Initialize and start the timer
         }
 

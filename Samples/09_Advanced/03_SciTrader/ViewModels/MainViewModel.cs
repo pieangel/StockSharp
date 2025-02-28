@@ -39,17 +39,34 @@ using System.Security;
 using SciTrader.Network;
 using SciTrader.Services;
 using StockSharp.SignalMaster;
+using System.Threading.Tasks;
 
 
 namespace SciTrader.ViewModels {
-    public class MainViewModel {
+    public class MainViewModel : ViewModelBase {
 
 		private Connector _connector;
 		private MainWindow _mainWindow;
 
 		private const string _connectorFile = "ConnectorFile.json";
 
+		private string _statusMessage = "Ready";  // Default status message
 
+		public string StatusMessage
+		{
+			get => _statusMessage;
+			set
+			{
+				_statusMessage = value;
+				RaisePropertyChanged(nameof(StatusMessage)); // ✅ Notify UI
+			}
+		}
+
+		// Example: Call this method when an operation is finished
+		public void UpdateStatus(string message)
+		{
+			StatusMessage = message;
+		}
 
 
 
@@ -123,7 +140,8 @@ namespace SciTrader.ViewModels {
 		        .Subscribe(window =>
 		        {
 			        _mainWindow = window as MainWindow;
-		        });
+					Task.Delay(100).ContinueWith(_ => UpdateStatus("Application Ready"), TaskScheduler.FromCurrentSynchronizationContext());
+				});
 
 			EventBus.Instance.ConnectorObservable
 				.Subscribe(connector =>
@@ -467,6 +485,7 @@ namespace SciTrader.ViewModels {
 
 		private void Connector_Connected()
 		{
+			UpdateStatus("Connected successfully!");
 			ConnectCommandViewModel.Glyph = Images.Disconnect;
 			// try lookup all securities
 			_connector.LookupSecurities(StockSharp.Messages.Extensions.LookupAllCriteriaMessage);

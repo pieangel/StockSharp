@@ -197,8 +197,6 @@ namespace SciTrader
 				EventBus.Instance.PublishMainWindow(this);
 				EventBus.Instance.PublishConnector(ConnectorService.Instance.Connector);
 
-				//InitSciLeanMessageAdapter();
-				//InitConnect();
 			}
 			catch (Exception ex)
 			{
