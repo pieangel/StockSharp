@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -42,26 +42,18 @@ using DevExpress.Xpf.DemoCenterBase;
 
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Storages.Csv;
-using StockSharp.SignalMaster;
-using SciTrader.ViewModels;
-using System.Reactive.Linq;
-using ReactiveUI;
-using System.Reactive.Subjects;
 
 namespace SciTrader
 {
     public partial class MainWindow : ThemedWindow {
-
-		private IDisposable _subscription;
-		private readonly MainViewModel _viewModel;
-		private Connector _connector = new Connector();
+		private Connector _connector;
 		public Connector Connector { get; private set; }
 		private const string _connectorFile = "ConnectorFile.json";
 
 		private readonly List<Subscription> _subscriptions = new();
 		//private SecurityId? _selectedSecurityId;
-		
-		private SignalMasterMessageAdapter signalMasterMessageAdapter;
+		/*
+		private SciLeanMessageAdapter slMessageAdapter;
 
 		public class SciLeanIdGenerator : Ecng.Common.IdGenerator
 		{
@@ -77,7 +69,7 @@ namespace SciTrader
 				return Interlocked.Increment(ref _currentId);
 			}
 		}
-		
+		*/
 
 		private static SecureString ToSecureString(string str)
 		{
@@ -100,20 +92,20 @@ namespace SciTrader
 				_connector.Load(_connectorFile.Deserialize<SettingsStorage>());
 			}
 		}
-		
+		/*
 		private void InitSciLeanMessageAdapter()
 		{
-			signalMasterMessageAdapter = new SignalMasterMessageAdapter(new SciLeanIdGenerator());
+			slMessageAdapter = new SciLeanMessageAdapter(new SciLeanIdGenerator());
 			var apiKey = ToSecureString("angelpie"); // Replace with your actual API key
 			var apiSecret = ToSecureString("orion"); // Replace with your actual API secret
 
-			signalMasterMessageAdapter.Key = apiKey;
-			signalMasterMessageAdapter.Secret = apiSecret;
+			slMessageAdapter.Key = apiKey;
+			slMessageAdapter.Secret = apiSecret;
 
 			// Add the Coinbase adapter to the connector
-			_connector.Adapter.InnerAdapters.Add(signalMasterMessageAdapter);
+			_connector.Adapter.InnerAdapters.Add(slMessageAdapter);
 		}
-		
+		*/
 		public static MainWindow Instance { get; private set; }
 		private Connector MainPanel_OnCreateConnector(string path)
 		{
@@ -190,8 +182,7 @@ namespace SciTrader
 		}
 
 
-		public MainWindow(MainViewModel viewModel)
-		{
+		public MainWindow() {
 			Instance = this;
 			try
 			{
@@ -202,80 +193,12 @@ namespace SciTrader
 				Theme.RegisterPredefinedPaletteThemes();
 				InitializeComponent();
 
-				InitSciLeanMessageAdapter();
-				InitConnect();
-
-				_viewModel = viewModel;
-				DataContext = _viewModel;
-
-				// ✅ Set MainWindow instance in ViewModel
-				_viewModel.SetMainWindow(this);
-
-				// ✅ Subscribe to ViewModel events using Rx.NET
-				_subscription = _viewModel.EventObservable
-					.ObserveOn(RxApp.MainThreadScheduler) // Ensure UI thread safety
-					.Subscribe(OnEventReceived);
-
-				// ✅ Subscribe to Subscription Errors
-				_viewModel.SubscriptionErrorObservable
-					.ObserveOn(RxApp.MainThreadScheduler) // Ensure UI thread safety
-					.Subscribe(ShowSubscriptionError);
-
-				// ✅ UI updates on the main thread
-				_viewModel.SecurityReceivedObservable
-					.ObserveOn(RxApp.MainThreadScheduler)
-					.Subscribe(sec =>
-					{
-						;// SecurityPicker.Securities.Add(sec);
-					});
-
-				_viewModel.TimeFramesObservable
-				.ObserveOn(RxApp.MainThreadScheduler) // ✅ Ensure UI updates run on the main thread
-				.Subscribe(timeFrames =>
-				{
-					; //_securitiesWindow.UpdateTimeFrames(timeFrames);
-				});
-
+				//InitSciLeanMessageAdapter();
+				//InitConnect();
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show($"XAML error: {ex.Message}");
-			}
-			
-		}
-
-		// ✅ UI Logic: Show Error MessageBox
-		private void ShowSubscriptionError(SubscriptionErrorEvent errorEvent)
-		{
-			MessageBox.Show(this, errorEvent.ErrorMessage,
-				$"Subscription Error - {errorEvent.DataType} ({errorEvent.SecurityId})",
-				MessageBoxButton.OK, MessageBoxImage.Error);
-		}
-
-		private void OnEventReceived(EventData<object> eventData)
-		{
-			if (eventData == null) return;
-
-			switch (eventData.Type)
-			{
-				case "ShowSettingsPopup":
-					MessageBox.Show("Settings dialog should appear here!");
-					break;
-			}
-		}
-
-		protected override void OnClosed(EventArgs e)
-		{
-			base.OnClosed(e);
-			_subscription?.Dispose(); // ✅ Dispose Rx.NET subscription to prevent memory leaks
-		}
-
-		// ✅ Handle received requests from ViewModel
-		private void OnViewRequestReceived(string request)
-		{
-			if (request == "ShowPopup")
-			{
-				MessageBox.Show("This is a popup from ViewModel (Rx.NET)!");
 			}
 		}
 
@@ -292,11 +215,6 @@ namespace SciTrader
 			{
 				MessageBox.Show($"Error: {ex.Message}");
 			}
-		}
-
-		public void ChangeConnectStatus(bool isConnected)
-		{
-			// Change the connection status
 		}
 	}
 }

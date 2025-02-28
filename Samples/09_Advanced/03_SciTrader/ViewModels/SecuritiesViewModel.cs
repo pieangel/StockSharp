@@ -26,7 +26,7 @@ namespace SciTrader.ViewModels
 		protected override string WorkspaceName { get { return "Toolbox"; } }
 		public SecuritiesViewModel()
 		{
-			_connector = MainWindow.Instance.Connector;
+			//_connector = MainWindow.Instance.Connector;
 
 			Securities = new ObservableCollection<Security>();
 			TimeFrames = new ObservableCollection<TimeSpan>();

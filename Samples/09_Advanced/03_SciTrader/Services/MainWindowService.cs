@@ -28,7 +28,7 @@ namespace SciTrader.Services
 		{
 			_mainWindow.Dispatcher.Invoke(() =>
 			{
-				_mainWindow.ChangeConnectStatus(isConnected);
+				//_mainWindow.ChangeConnectStatus(isConnected);
 			});
 		}
 	}

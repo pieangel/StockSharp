@@ -26,13 +26,8 @@ using DevExpress.Xpf.DemoBase.Helpers.TextColorizer;
 using DevExpress.Xpf.Docking;
 using DevExpress.Xpf.PropertyGrid;
 
-using Ecng.Common;
-using Ecng.Configuration;
 using Ecng.Serialization;
-using Ecng.Collections;
-using Ecng.Logging;
-
-using Nito.AsyncEx;
+using Ecng.Configuration;
 
 using StockSharp.Configuration;
 using StockSharp.Messages;
@@ -42,37 +37,18 @@ using StockSharp.Xaml;
 using System.Threading;
 using System.Security;
 using SciTrader.Network;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
-using System.Reactive.Subjects;
-using System.Reactive.Linq;
-using StockSharp.Localization;
-using StockSharp.Algo.Storages;
 
 
 namespace SciTrader.ViewModels {
-    public class MainViewModel
-	{
+    public class MainViewModel {
 
-		// ✅ Rx.NET Subject for event-driven communication
-		private readonly Subject<EventData<object>> _eventSubject = new();
-		public IObservable<EventData<object>> EventObservable => _eventSubject.AsObservable();
-
-		public Connector Connector { get; private set; }
-        private Connector _connector;
+		private readonly Connector _connector = new();
 		private const string _connectorFile = "ConnectorFile.json";
-
-		// ✅ Rx.NET Subject that the View will observe
-		private readonly Subject<string> _viewRequestSubject = new();
-
-		// ✅ Expose as an Observable (Only View can listen, but cannot push data)
-		public IObservable<string> ViewRequests => _viewRequestSubject.AsObservable();
 
 		private readonly List<Subscription> _subscriptions = new();
 		//private SecurityId? _selectedSecurityId;
 
-		/*
+        /*
 		private SciLeanMessageAdapter slMessageAdapter;
 
 		public class SciLeanIdGenerator : Ecng.Common.IdGenerator
@@ -91,32 +67,6 @@ namespace SciTrader.ViewModels {
 		}
         */
 
-
-		private bool _isConnected;
-		private Window _mainWindow;
-
-		public ObservableCollection<Security> Securities { get; } = new();
-		public ObservableCollection<Order> Orders { get; } = new();
-		public ObservableCollection<ITickTradeMessage> Trades { get; } = new();
-
-		private string _connectButtonLabel = "Connect";
-
-		public string ConnectButtonLabel
-		{
-			get => _connectButtonLabel;
-			set
-			{
-				_connectButtonLabel = value;
-				OnPropertyChanged();
-			}
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
 
 		public const int Tick = 500;
         CommandViewModel errorList;
@@ -158,195 +108,7 @@ namespace SciTrader.ViewModels {
             InitDefaultLayout();
 			//InitSciLeanMessageAdapter();
 			//InitConnect();
-
-			// ✅ Register Messenger to receive MainWindow instance
-			Messenger.Default.Register<Window>(this, "MainWindowMessage", window =>
-			{
-				_mainWindow = window;
-				_connector = new Connector(); // ✅ Now we can pass MainWindow
-			});
-
-
-			
-		}
-
-		private readonly string _defaultDataPath = "Data";
-		private readonly string _settingsFile;
-
-		private readonly Subject<bool> _connectionStatusSubject = new();
-		public IObservable<bool> ConnectionStatusObservable => _connectionStatusSubject.AsObservable();
-
-		private readonly Subject<SubscriptionErrorEvent> _subscriptionErrorSubject = new();
-		public IObservable<SubscriptionErrorEvent> SubscriptionErrorObservable => _subscriptionErrorSubject.AsObservable();
-
-		// ✅ Rx.NET Subject for Security Events
-		private readonly Subject<Security> _securityReceivedSubject = new();
-
-		public IObservable<Security> SecurityReceivedObservable => _securityReceivedSubject.AsObservable();
-
-		// ✅ Rx.NET Subject for TimeFrames
-		private readonly Subject<List<TimeSpan>> _timeFramesSubject = new();
-
-		public IObservable<List<TimeSpan>> TimeFramesObservable => _timeFramesSubject.AsObservable();
-
-		private void InitConnector()
-        {
-			Connector.Connected += () =>
-			{
-				_connectionStatusSubject.OnNext(true); // 🔴 Notify the View about connection status
-
-				if (Connector.Adapter.IsMarketDataTypeSupported(DataType.News) && !Connector.Adapter.IsSecurityNewsOnly)
-				{
-					if (Connector.Subscriptions.All(s => s.DataType != DataType.News))
-						Connector.SubscribeNews();
-				}
-			};
-
-			Connector.ConnectionError += error =>
-			{
-				_connectionStatusSubject.OnNext(false); // 🔴 Notify View about error
-			};
-
-			Connector.Disconnected += () =>
-			{
-				_connectionStatusSubject.OnNext(false); // 🔴 Notify View about disconnection
-			};
-
-			Connector.ConnectionLost += a => Connector.AddErrorLog(LocalizedStrings.ConnectionLost); ;
-            Connector.ConnectionRestored += a => Connector.AddInfoLog(LocalizedStrings.ConnectionRestored); ;
-
-			// subscribe on error event
-			//Connector.Error += error =>
-			//	this.GuiAsync(() => MessageBox.Show(this, error.ToString(), LocalizedStrings.DataProcessError));
-
-			// subscribe on error of market data subscription event
-			Connector.SubscriptionFailed += (sub, error, isSubscribe) =>
-			{
-				// 🔴 Notify the View about the error instead of showing MessageBox
-				_subscriptionErrorSubject.OnNext(new SubscriptionErrorEvent
-				{
-					DataType = sub.DataType,
-					SecurityId = (SecurityId)sub.SecurityId,
-					ErrorMessage = error.ToString().Truncate(300)
-				});
-			};
-
-
-
-			/*
-             * What Happens in Runtime?
-               The Connector receives new security data from the market.
-               The SecurityReceived event is triggered.
-               The event handler (s, sec) => _securitiesWindow.SecurityPicker.Securities.Add(sec); executes.
-               The security (sec) is added to the UI's SecurityPicker.
-            */
-			// ✅ Event Subscription
-			Connector.SecurityReceived += (s, sec) => _securityReceivedSubject.OnNext(sec);
-			/*
-			Connector.SecurityReceived += (s, sec) => _securitiesWindow.SecurityPicker.Securities.Add(sec);
-            Connector.TickTradeReceived += (s, t) => _tradesWindow.TradeGrid.Trades.Add(t);
-            Connector.OrderLogReceived += (s, ol) => _orderLogWindow.OrderLogGrid.LogItems.Add(ol);
-            Connector.Level1Received += (s, l) => _level1Window.Level1Grid.Messages.Add(l);
-
-            Connector.NewOrder += Connector_OnNewOrder;
-            Connector.OrderChanged += Connector_OnOrderChanged;
-            Connector.OrderEdited += Connector_OnOrderEdited;
-
-            Connector.NewMyTrade += _myTradesWindow.TradeGrid.Trades.Add;
-
-            Connector.PositionReceived += (sub, p) => _portfoliosWindow.PortfolioGrid.Positions.TryAdd(p);
-            */
-
-			// subscribe on error of order registration event
-			Connector.OrderRegisterFailed += Connector_OnOrderRegisterFailed;
-            // subscribe on error of order cancelling event
-            Connector.OrderCancelFailed += Connector_OnOrderCancelFailed;
-            // subscribe on error of order edition event
-            Connector.OrderEditFailed += Connector_OnOrderEditFailed;
-
-			// set market data provider
-			//_securitiesWindow.SecurityPicker.MarketDataProvider = Connector;
-
-			// set news provider
-			//_newsWindow.NewsPanel.NewsProvider = Connector;
-
-			// ✅ Event Subscription in ViewModel
-			Connector.LookupTimeFramesResult += (message, timeFrames, error) =>
-			{
-				if (error == null)
-					_timeFramesSubject.OnNext(timeFrames.ToList()); // Emit time frames
-			};
-
-			var nativeIdStorage = ServicesRegistry.TryNativeIdStorage;
-
-            if (nativeIdStorage != null)
-            {
-                Connector.Adapter.NativeIdStorage = nativeIdStorage;
-
-                try
-                {
-                    nativeIdStorage.Init();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(_mainWindow, ex.ToString());
-                }
-            }
-
-            if (Connector.StorageAdapter != null)
-            {
-                LoggingHelper.DoWithLog(ServicesRegistry.EntityRegistry.Init);
-                LoggingHelper.DoWithLog(ServicesRegistry.ExchangeInfoProvider.Init);
-
-                //Connector.Adapter.StorageSettings.DaysLoad = TimeSpan.FromDays(3);
-                Connector.Adapter.StorageSettings.Mode = StorageModes.Snapshot;
-                Connector.LookupAll();
-
-                Connector.SnapshotRegistry.Init();
-            }
-
-			ConfigManager.RegisterService<IMessageAdapterProvider>(new InMemoryMessageAdapterProvider(Connector.Adapter.InnerAdapters));
-
-			// for show mini chart in SecurityGrid
-			//_securitiesWindow.SecurityPicker.PriceChartDataProvider = new PriceChartDataProvider(Connector);
-
-			try
-			{
-				if (_settingsFile.IsConfigExists())
-				{
-					var ctx = new ContinueOnExceptionContext();
-					ctx.Error += ex => ex.LogError();
-
-					using (ctx.ToScope())
-						Connector.LoadIfNotNull(_settingsFile.Deserialize<SettingsStorage>());
-				}
-			}
-			catch
-			{
-				// ignore
-			}
-		}
-
-		private void Connector_OnOrderRegisterFailed(OrderFail fail)
-		{
-			//_ordersWindow.OrderGrid.AddRegistrationFail(fail);
-			//_securitiesWindow.ProcessOrderFail(fail);
-		}
-
-		private void Connector_OnOrderEditFailed(long transactionId, OrderFail fail)
-		{
-			//_securitiesWindow.ProcessOrderFail(fail);
-		}
-
-		private void Connector_OnOrderCancelFailed(OrderFail fail)
-		{
-			//_securitiesWindow.ProcessOrderFail(fail);
-
-// 			this.GuiAsync(() =>
-// 			{
-// 				MessageBox.Show(this.GetWindow(), fail.Error.ToString(), LocalizedStrings.OrderError);
-// 			});
-		}
+        }
 
 		private static SecureString ToSecureString(string str)
 		{
@@ -660,43 +422,33 @@ namespace SciTrader.ViewModels {
 		void OnSettings(object param)
 		{
 			// ✅ Push an event for UI updates (e.g., Show Settings Popup)
-			_eventSubject.OnNext(new EventData<object> { Type = "ShowSettingsPopup", Data = null });
-
-			if (_mainWindow != null && _connector.Configure(_mainWindow))
-			{
-				_connector.Save().Serialize("ConnectorSettings.json");
-			}
+// 			_eventSubject.OnNext(new EventData<object> { Type = "ShowSettingsPopup", Data = null });
+// 
+// 			if (_mainWindow != null && _connector.Configure(_mainWindow))
+// 		    {
+// 				_connector.Save().Serialize("ConnectorSettings.json");
+// 			}
 		}
 
 
 		// ✅ Set the MainWindow instance from outside (instead of Messenger)
 		public void SetMainWindow(Window window)
-		{
-			_mainWindow = window;
-		}
+			{
+			    //_mainWindow = window;
+			}
 
 
 		private void ChangeConnectStatus(bool isConnected)
 		{
-			_isConnected = isConnected;
-			ConnectButtonLabel = _isConnected ? "Disconnect" : "Connect";
+			//_isConnected = isConnected;
+			//ConnectButtonLabel = _isConnected ? "Disconnect" : "Connect";
 		}
 
 
 		void OnConnect(object param)
         {
 			_connector.Connected += Connector_Connected;
-			//_connector.Connect();
-
-			if (_isConnected)
-			{
-				_connector.Disconnect();
-			}
-			else
-			{
-				_connector.Connect();
-				//_connector.LookupSecurities(StockSharp.Messages.Extensions.LookupAllCriteriaMessage);
-			}
+			_connector.Connect();
 		}
 
 		private void Connector_Connected()
