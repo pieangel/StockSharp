@@ -64,7 +64,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
-				<RowDefinition Height="30"/>
+				<!--<RowDefinition Height="30"/>-->
             </Grid.RowDefinitions>
             <dxdo:DockLayoutManager x:Name="DemoDockContainer" FloatingMode="Desktop" ItemsSource="{Binding Workspaces}"
                                     FloatingDocumentContainer="DocumentHost">
@@ -103,7 +103,7 @@
 			<dxb:StatusBarControl HideWhenEmpty="False" Caption="StatusBar" AllowCustomizationMenu="False" Grid.Row="1">
                 <dxb:BarStaticItem Content="Ready"/>
             </dxb:StatusBarControl>
-			<Button Grid.Row="2" Width="80" x:Name="Setting" Content="Setting" Click="Setting_Click" />
+			<!--<Button Grid.Row="2" Width="80" x:Name="Setting" Content="Setting" Click="Setting_Click" />-->
         </Grid>
     </dxb:BarManager>
 </dx:ThemedWindow>
