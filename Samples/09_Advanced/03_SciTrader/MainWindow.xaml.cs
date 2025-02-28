@@ -178,7 +178,7 @@ namespace SciTrader
 				// Hide loading message after completion
 				LoadingMessage.Visibility = Visibility.Collapsed;
 
-				MessageBox.Show("Download completed successfully!", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+				//MessageBox.Show("Download completed successfully!", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
 			});
 		}
 

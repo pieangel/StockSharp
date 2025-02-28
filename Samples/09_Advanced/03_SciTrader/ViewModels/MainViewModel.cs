@@ -38,6 +38,7 @@ using System.Threading;
 using System.Security;
 using SciTrader.Network;
 using SciTrader.Services;
+using StockSharp.SignalMaster;
 
 
 namespace SciTrader.ViewModels {
@@ -55,14 +56,14 @@ namespace SciTrader.ViewModels {
 		private readonly List<Subscription> _subscriptions = new();
 		//private SecurityId? _selectedSecurityId;
 
-        /*
-		private SciLeanMessageAdapter slMessageAdapter;
+        
+		private SignalMasterMessageAdapter signalMasterMessageAdapter;
 
-		public class SciLeanIdGenerator : Ecng.Common.IdGenerator
+		public class SciTraderIdGenerator : Ecng.Common.IdGenerator
 		{
 			private long _currentId;
 
-			public SciLeanIdGenerator()
+			public SciTraderIdGenerator()
 			{
 				_currentId = 1;
 			}
@@ -72,7 +73,7 @@ namespace SciTrader.ViewModels {
 				return Interlocked.Increment(ref _currentId);
 			}
 		}
-        */
+        
 
 
 		public const int Tick = 500;
@@ -113,9 +114,8 @@ namespace SciTrader.ViewModels {
 			SecuritiesViewModel = CreatePanelWorkspaceViewModel<SecuritiesViewModel>();
 			Bars = new ReadOnlyCollection<BarModel>(CreateBars());
             InitDefaultLayout();
-			//InitSciLeanMessageAdapter();
-			//InitConnect();
-        }
+            InitEventBus();
+		}
 
         private void InitEventBus()
         {
@@ -129,6 +129,8 @@ namespace SciTrader.ViewModels {
 				.Subscribe(connector =>
 				{
 					_connector = connector;
+					InitMessageAdapter();
+					InitConnect();
 				});
 		}
 
@@ -153,20 +155,20 @@ namespace SciTrader.ViewModels {
 				_connector.Load(_connectorFile.Deserialize<SettingsStorage>());
 			}
 		}
-        /*
-		private void InitSciLeanMessageAdapter()
+        
+		private void InitMessageAdapter()
 		{
-			slMessageAdapter = new SciLeanMessageAdapter(new SciLeanIdGenerator());
+			signalMasterMessageAdapter = new SignalMasterMessageAdapter(new SciTraderIdGenerator());
 			var apiKey = ToSecureString("angelpie"); // Replace with your actual API key
 			var apiSecret = ToSecureString("orion"); // Replace with your actual API secret
 
-			slMessageAdapter.Key = apiKey;
-			slMessageAdapter.Secret = apiSecret;
+			signalMasterMessageAdapter.Key = apiKey;
+			signalMasterMessageAdapter.Secret = apiSecret;
 
 			// Add the Coinbase adapter to the connector
-			_connector.Adapter.InnerAdapters.Add(slMessageAdapter);
+			_connector.Adapter.InnerAdapters.Add(signalMasterMessageAdapter);
 		}
-        */
+        
 
 		public ReadOnlyCollection<BarModel> Bars { get; private set; }
         public ErrorListViewModel ErrorListViewModel { get; private set; }
@@ -444,21 +446,11 @@ namespace SciTrader.ViewModels {
 		void OnSettings(object param)
 		{
 			// ✅ Push an event for UI updates (e.g., Show Settings Popup)
-// 			_eventSubject.OnNext(new EventData<object> { Type = "ShowSettingsPopup", Data = null });
-// 
-// 			if (_mainWindow != null && _connector.Configure(_mainWindow))
-// 		    {
-// 				_connector.Save().Serialize("ConnectorSettings.json");
-// 			}
-		}
-
-
-		// ✅ Set the MainWindow instance from outside (instead of Messenger)
-		public void SetMainWindow(Window window)
-			{
-			    //_mainWindow = window;
+			if (_mainWindow != null && _connector.Configure(_mainWindow))
+		    {
+				_connector.Save().Serialize("ConnectorSettings.json");
 			}
-
+		}
 
 		private void ChangeConnectStatus(bool isConnected)
 		{
