@@ -18,7 +18,7 @@ namespace SciTrader.ViewModels
 	public abstract class ViewModel : IDisposable
 	{
 		public string BindableName { get { return GetBindableName(DisplayName); } }
-		public virtual string DisplayName { get; protected set; }
+		public virtual string DisplayName { get; set; }
 		public virtual ImageSource Glyph { get; set; }
 
 		string GetBindableName(string name)

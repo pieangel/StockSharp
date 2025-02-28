@@ -487,6 +487,7 @@ namespace SciTrader.ViewModels {
 		{
 			UpdateStatus("Connected successfully!");
 			ConnectCommandViewModel.Glyph = Images.Disconnect;
+            ConnectCommandViewModel.DisplayName = "Disconnect";
 			// try lookup all securities
 			_connector.LookupSecurities(StockSharp.Messages.Extensions.LookupAllCriteriaMessage);
 		}
