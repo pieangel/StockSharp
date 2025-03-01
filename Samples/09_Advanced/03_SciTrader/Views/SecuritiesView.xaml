@@ -21,15 +21,18 @@
 	
 	<Grid>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="30" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
+		<ComboBox ItemsSource="{Binding TimeFrames}" 
+          SelectedItem="{Binding SelectedTimeFrame, Mode=TwoWay}" />
 
 		<sx:SecurityPicker x:Name="SecurityPicker"
                    helpers:SecurityPickerHelper.EnableBinding="True"
                    helpers:SecurityPickerHelper.BoundSecurity="{Binding SelectedSecurity, Mode=TwoWay}" />
 
-		<Grid Grid.Row="1">
+		<Grid Grid.Row="2">
 			<StackPanel Orientation="Horizontal">
 				<Button Content="Find" Command="{Binding FindCommand}" Width="70"/>
 				<Button Content="Level1" Command="{Binding SubscribeLevel1Command}" Width="60"/>

@@ -37,6 +37,17 @@ namespace SciTrader.ViewModels
 			SubscribeTicksCommand = new RelayCommand(SubscribeTicks, CanSubscribe);
 			SubscribeOrderLogCommand = new RelayCommand(SubscribeOrderLog, CanSubscribe);
 			SubscribeCandlesCommand = new RelayCommand(SubscribeCandles, CanSubscribe);
+
+			TimeFrames = new ObservableCollection<TimeSpan>
+			{
+				TimeSpan.FromMinutes(1),
+				TimeSpan.FromMinutes(5),
+				TimeSpan.FromMinutes(15),
+				TimeSpan.FromHours(1)
+			};
+
+			// Set default selected value
+			SelectedTimeFrame = TimeFrames.FirstOrDefault();
 		}
 
 		public ObservableCollection<Security> Securities { get; }
@@ -50,6 +61,18 @@ namespace SciTrader.ViewModels
 				_selectedSecurity = value;
 				OnPropertyChanged();
 				UpdateCommandStates();
+			}
+		}
+
+		private TimeSpan _selectedTimeFrame;
+
+		public TimeSpan SelectedTimeFrame
+		{
+			get => _selectedTimeFrame;
+			set
+			{
+				_selectedTimeFrame = value;
+				OnPropertyChanged();
 			}
 		}
 
