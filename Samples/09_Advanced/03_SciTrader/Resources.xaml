@@ -203,6 +203,10 @@
 		<views:ForeignSymbolView BorderThickness="1"/>
 	</DataTemplate>
 
+	<DataTemplate DataType="{x:Type viewModels:MonitorViewModel}">
+		<views:MonitorView BorderThickness="1"/>
+	</DataTemplate>
+
 	<DataTemplate DataType="{x:Type viewModels:SearchResultsViewModel}">
         <TextBox Style="{StaticResource BottomTextStyle}" Text="{Binding Text, Mode=OneTime}" />
     </DataTemplate>

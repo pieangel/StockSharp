@@ -117,7 +117,8 @@ namespace SciTrader.ViewModels {
         ObservableCollection<WorkspaceViewModel> workspaces;
 
         public MainViewModel() {
-            ErrorListViewModel = CreatePanelWorkspaceViewModel<ErrorListViewModel>();
+			MonitorViewModel = CreatePanelWorkspaceViewModel<MonitorViewModel>();
+			ErrorListViewModel = CreatePanelWorkspaceViewModel<ErrorListViewModel>();
             OutputViewModel = CreatePanelWorkspaceViewModel<OutputViewModel>();
             PropertiesViewModel = CreatePanelWorkspaceViewModel<PropertiesViewModel>();
             SearchResultsViewModel = CreatePanelWorkspaceViewModel<SearchResultsViewModel>();
@@ -178,7 +179,10 @@ namespace SciTrader.ViewModels {
 		public ReadOnlyCollection<BarModel> Bars { get; private set; }
         public ErrorListViewModel ErrorListViewModel { get; private set; }
         public OutputViewModel OutputViewModel { get; private set; }
-        public PropertiesViewModel PropertiesViewModel { get; private set; }
+
+		public MonitorViewModel MonitorViewModel { get; private set; }
+
+		public PropertiesViewModel PropertiesViewModel { get; private set; }
         public SearchResultsViewModel SearchResultsViewModel { get; set; }
 
         public OpenOrdersViewModel OpenOrdersViewModel { get; private set; }
@@ -417,8 +421,9 @@ namespace SciTrader.ViewModels {
                 ForeignSymbolViewModel, 
                 SolutionExplorerViewModel, 
                 PropertiesViewModel, 
-                ErrorListViewModel 
-            };
+                MonitorViewModel,
+				ErrorListViewModel
+			};
             foreach(var panel in panels) {
                 OpenOrCloseWorkspace(panel, false);
             }
