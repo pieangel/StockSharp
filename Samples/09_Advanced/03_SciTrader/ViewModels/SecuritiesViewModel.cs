@@ -19,6 +19,7 @@ using SciTrader.Model;
 using DevExpress.Mvvm;
 
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
+using SciTrader.Services;
 
 namespace SciTrader.ViewModels
 {
@@ -53,6 +54,12 @@ namespace SciTrader.ViewModels
 
 			// Set default selected value
 			SelectedTimeFrame = TimeFrames.FirstOrDefault();
+
+			EventBus.Instance.ConnectorObservable
+				.Subscribe(connector =>
+				{
+					_connector = connector;
+				});
 		}
 
 		public ObservableCollection<Security> Securities { get; }
@@ -134,15 +141,6 @@ namespace SciTrader.ViewModels
 				_connector.UnSubscribe(_connector.FindSubscriptions(SelectedSecurity, DataType.OrderLog).First());
 			else
 				_connector.SubscribeOrderLog(SelectedSecurity);
-		}
-
-		private void SecurityPicker_OnSecuritySelected(Security security)
-		{
-// 			Level1.IsEnabled = Level1Hist.IsEnabled = Ticks.IsEnabled = TicksHist.IsEnabled =
-// 				OrderLog.IsEnabled = NewOrder.IsEnabled = Depth.IsEnabled =
-// 				DepthAdvanced.IsEnabled = DepthFiltered.IsEnabled = security != null;
-// 
-// 			TryEnableCandles();
 		}
 
 		private void SubscribeCandles()
