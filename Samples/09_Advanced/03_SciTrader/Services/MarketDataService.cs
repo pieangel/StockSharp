@@ -16,7 +16,7 @@ namespace SciTrader.Services
 			_connectorService = connectorService;
 
 			// Subscribe to Market Data Events
-			var connector = _connectorService.Connector;
+			var connector = _connectorService.GetConnector();
 
 			connector.SecurityReceived += (s, sec) => Console.WriteLine($"Security Received: {sec.Code}");
 			connector.TickTradeReceived += (s, t) => Console.WriteLine($"Trade: {t.SecurityId} - {t.Price}");

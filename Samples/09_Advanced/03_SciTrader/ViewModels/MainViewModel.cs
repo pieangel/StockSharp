@@ -104,12 +104,10 @@ namespace SciTrader.ViewModels {
         CommandViewModel output;
         CommandViewModel properties;
         CommandViewModel save;
-        //CommandViewModel ConnectCommandViewModel;
         CommandViewModel saveAll;
         CommandViewModel saveLayout;
         CommandViewModel searchResults;
         CommandViewModel solutionExplorer;
-		//CommandViewModel settingCommandViewModel;
 
 		public CommandViewModel ConnectCommandViewModel { get; private set; }
 		public CommandViewModel SettingsCommandViewModel { get; private set; }
@@ -148,9 +146,9 @@ namespace SciTrader.ViewModels {
 				{
 					_connector = connector;
 					InitMessageAdapter();
-					InitConnect();
 				});
 		}
+
 
 		private static SecureString ToSecureString(string str)
 		{
@@ -161,17 +159,6 @@ namespace SciTrader.ViewModels {
 			}
 			secureString.MakeReadOnly();
 			return secureString;
-		}
-
-        private void InitConnect()
-        {
-			// registering all connectors
-			ConfigManager.RegisterService<IMessageAdapterProvider>(new InMemoryMessageAdapterProvider(_connector.Adapter.InnerAdapters));
-
-			if (File.Exists(_connectorFile))
-			{
-				_connector.Load(_connectorFile.Deserialize<SettingsStorage>());
-			}
 		}
         
 		private void InitMessageAdapter()
@@ -470,13 +457,6 @@ namespace SciTrader.ViewModels {
 			}
 		}
 
-		private void ChangeConnectStatus(bool isConnected)
-		{
-			//_isConnected = isConnected;
-			//ConnectButtonLabel = _isConnected ? "Disconnect" : "Connect";
-		}
-
-
 		void OnConnect(object param)
         {
 			_connector.Connected += Connector_Connected;
@@ -530,24 +510,4 @@ namespace SciTrader.ViewModels {
         }
     }
     
-    
-
-	#region Tool Panels
-
-    
-
-    
-    #endregion
-
-    #region Bars
-    
-
-    
-    #endregion
-
-    #region Images
-    
-    
-    
-    #endregion
 }

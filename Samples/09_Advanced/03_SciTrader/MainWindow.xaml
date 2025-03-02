@@ -19,6 +19,7 @@
                  Padding="0"
                  Height="650"
                  Width="1000"
+				 Loaded="MainWindow_OnLoaded"
                  DataContext="{dxmvvm:ViewModelSource Type=viewModels:MainViewModel}">
     <dx:ThemedWindow.ToolbarItems>
         <dxb:MainMenuControl VerticalAlignment="Center"/>

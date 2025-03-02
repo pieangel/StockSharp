@@ -1,31 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ecng.Logging;
+using StockSharp.Xaml;
+using System.IO;
+using Ecng.Common;
 
 namespace SciTrader.Services
 {
 	public class LogService
 	{
-		private readonly LogManager _logManager;
+		private static readonly Lazy<LogService> _instance = new(() => new LogService());
+		public static LogService Instance => _instance.Value;
 
-		public LogService(LogManager logManager)
+		public LogManager LogManager { get; }
+
+		//private readonly string _defaultDataPath = "Data";
+		//public string DefaultDataPath => _defaultDataPath;
+
+		private LogService()
 		{
-			_logManager = logManager;
+			LogManager = new LogManager();
+			string defaultDataPath = ConfigService.Instance.DefaultDataPath;
+			LogManager.Listeners.Add(new FileLogListener { LogDirectory = Path.Combine(defaultDataPath, "Logs") });
 		}
 
-		public void LogInfo(string message)
+		public void AddGuiListener(GuiLogListener listener)
 		{
-			_logManager.Application.LogInfo(message);
-			Console.WriteLine($"[INFO] {message}"); // Optional console logging
+			LogManager.Listeners.Add(listener);
 		}
 
-		public void LogError(string message)
+		public void AddLogSource(ILogSource source)
 		{
-			_logManager.Application.LogError(message);
-			Console.WriteLine($"[ERROR] {message}");
+			LogManager.Sources.Add(source);
+		}
+
+		public void LogDebug(string message, Exception ex = null)
+		{
+			LogManager.Application.AddDebugLog(message, ex);
 		}
 	}
 

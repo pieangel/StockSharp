@@ -14,7 +14,14 @@ namespace SciTrader.Services
 
 		public static ConnectorService Instance => _instance.Value;
 
-		public Connector Connector { get; } = new Connector();
+		public void SetConnector(Connector connector)
+		{
+			_connector = connector;
+		}
+
+		private Connector? _connector;
+
+		public Connector? GetConnector() => _connector;
 
 		private ConnectorService() { }
 	}
