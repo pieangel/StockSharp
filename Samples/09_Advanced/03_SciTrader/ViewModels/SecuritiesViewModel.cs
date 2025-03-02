@@ -15,6 +15,9 @@ using StockSharp.Xaml;
 using SciTrader.Helpers;
 using Ecng.IO.Fossil;
 using SciTrader.Model;
+
+using DevExpress.Mvvm;
+
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace SciTrader.ViewModels
@@ -32,11 +35,13 @@ namespace SciTrader.ViewModels
 			TimeFrames = new ObservableCollection<TimeSpan>();
 
 			// Initialize Commands
-			FindCommand = new RelayCommand(FindSecurities);
-			SubscribeLevel1Command = new RelayCommand(SubscribeLevel1, CanSubscribe);
-			SubscribeTicksCommand = new RelayCommand(SubscribeTicks, CanSubscribe);
-			SubscribeOrderLogCommand = new RelayCommand(SubscribeOrderLog, CanSubscribe);
-			SubscribeCandlesCommand = new RelayCommand(SubscribeCandles, CanSubscribe);
+			FindCommand = new DelegateCommand(FindSecurities);
+			SubscribeLevel1Command = new DelegateCommand(SubscribeLevel1, CanSubscribe);
+			SubscribeTicksCommand = new DelegateCommand(SubscribeTicks, CanSubscribe);
+			SubscribeOrderLogCommand = new DelegateCommand(SubscribeOrderLog, CanSubscribe);
+			SubscribeCandlesCommand = new DelegateCommand(SubscribeCandles, CanSubscribe);
+
+			SecuritySelectedCommand = new DelegateCommand<Security>(OnSecuritySelected, CanSelectSecurity);
 
 			TimeFrames = new ObservableCollection<TimeSpan>
 			{
@@ -61,6 +66,16 @@ namespace SciTrader.ViewModels
 				_selectedSecurity = value;
 				OnPropertyChanged();
 				UpdateCommandStates();
+			}
+		}
+		public ICommand SecuritySelectedCommand { get; }
+
+		private void OnSecuritySelected(Security security)
+		{
+			if (security != null)
+			{
+				SelectedSecurity = security;
+				System.Diagnostics.Debug.WriteLine($"Security Selected: {security.Code}");
 			}
 		}
 
@@ -150,17 +165,22 @@ namespace SciTrader.ViewModels
 
 		private void UpdateCommandStates()
 		{
-			(FindCommand as RelayCommand)?.RaiseCanExecuteChanged();
-			(SubscribeLevel1Command as RelayCommand)?.RaiseCanExecuteChanged();
-			(SubscribeTicksCommand as RelayCommand)?.RaiseCanExecuteChanged();
-			(SubscribeOrderLogCommand as RelayCommand)?.RaiseCanExecuteChanged();
-			(SubscribeCandlesCommand as RelayCommand)?.RaiseCanExecuteChanged();
+			(FindCommand as DelegateCommand)?.RaiseCanExecuteChanged();
+			(SubscribeLevel1Command as DelegateCommand)?.RaiseCanExecuteChanged();
+			(SubscribeTicksCommand as DelegateCommand)?.RaiseCanExecuteChanged();
+			(SubscribeOrderLogCommand as DelegateCommand)?.RaiseCanExecuteChanged();
+			(SubscribeCandlesCommand as DelegateCommand)?.RaiseCanExecuteChanged();
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		private bool CanSelectSecurity(Security security)
+		{
+			return security != null; // Enables the command only when a valid security is selected.
 		}
 	}
 }

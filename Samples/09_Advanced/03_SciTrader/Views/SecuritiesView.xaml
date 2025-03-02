@@ -7,7 +7,8 @@
              xmlns:commissions="clr-namespace:StockSharp.Algo.Commissions;assembly=StockSharp.Algo" 
              xmlns:local_converter="clr-namespace:SciTrader.Converter"
 			 xmlns:helpers="clr-namespace:SciTrader.Helpers"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
 	<UserControl.Resources>
 		<Style TargetType="Label" x:Key="ComboBoxLabelStyle">
 			<Setter Property="FontFamily" Value="Malgun Gothic"/>
@@ -30,9 +31,15 @@
 
 		<sx:SecurityPicker x:Name="SecurityPicker"
                    helpers:SecurityPickerHelper.EnableBinding="True"
-                   helpers:SecurityPickerHelper.BoundSecurity="{Binding SelectedSecurity, Mode=TwoWay}" />
-
-		<Grid Grid.Row="2">
+                   helpers:SecurityPickerHelper.BoundSecurity="{Binding SelectedSecurity, Mode=TwoWay}" >
+			<i:Interaction.Triggers>
+				<i:EventTrigger EventName="SecuritySelected">
+					<i:InvokeCommandAction Command="{Binding SecuritySelectedCommand}"
+                                   CommandParameter="{Binding ElementName=SecurityPicker, Path=SelectedSecurity}" />
+				</i:EventTrigger>
+			</i:Interaction.Triggers>
+		</sx:SecurityPicker>
+			<Grid Grid.Row="2">
 			<StackPanel Orientation="Horizontal">
 				<Button Content="Find" Command="{Binding FindCommand}" Width="70"/>
 				<Button Content="Level1" Command="{Binding SubscribeLevel1Command}" Width="60"/>

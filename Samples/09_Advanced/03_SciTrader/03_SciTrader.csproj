@@ -389,6 +389,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.12.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="ReactiveUI" Version="20.1.63" />
     <PackageReference Include="SciChart" Version="8.6.0.28199" />
