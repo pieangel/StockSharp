@@ -30,17 +30,10 @@ namespace SciTrader.Views
 
 		private void MonitorView_OnLoaded(object sender, RoutedEventArgs e)
 		{
-			//var logService = LogService.Instance; // ✅ Use shared LogService
 
 			// ✅ Add GUI Listener for UI logging
 			LogService.Instance.AddGuiListener(new GuiLogListener(Monitor));
 
-			// ✅ Create or Get Connector
-			//Connector = CreateConnector?.Invoke(_defaultDataPath) ?? new Connector();
-			//var connector = ConnectorService.Instance.GetConnector();
-
-			// ✅ Add Connector as a Log Source
-			//logService.AddLogSource(connector);
 		}
 	}
 }
