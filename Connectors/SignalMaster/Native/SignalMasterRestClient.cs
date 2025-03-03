@@ -47,9 +47,9 @@ class SignalMasterRestClient : BaseLogReceiver
 		return ProcessRequest<List<Candle>>(Method.Get, $"api/markets/{currency}/candles?resolution={resolution.TotalSeconds}&start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
 	}
 
-	public Task<AccountBalance> GetAccountBalance(string account, DateTime start, DateTime end, CancellationToken cancellationToken)
+	public Task<AccountBalance> GetAccountBalance(long request_id, string account, DateTime start, DateTime end, CancellationToken cancellationToken)
 	{
-		return ProcessRequest<AccountBalance>(Method.Get, $"api/balance?account={account}&start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
+		return ProcessRequest<AccountBalance>(Method.Get, $"api/balance?request_id={request_id}&account={account}&start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
 	}
 
 	public async Task<(List<Order> histOrders, bool hasMoreData)> GetMarketOrderHistoryAndHasMoreOrders(string subaccountName, DateTime startTime, CancellationToken cancellationToken)

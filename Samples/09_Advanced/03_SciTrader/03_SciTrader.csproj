@@ -392,6 +392,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="ReactiveUI" Version="20.1.63" />
+    <PackageReference Include="ReactiveUI.WPF" Version="20.1.63" />
     <PackageReference Include="SciChart" Version="8.6.0.28199" />
     <PackageReference Include="SciChart.DrawingTools" Version="8.6.0.28199" />
     <PackageReference Include="SciChart.ExternalDependencies" Version="8.6.0.28199" />

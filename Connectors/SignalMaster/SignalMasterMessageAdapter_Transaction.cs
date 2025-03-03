@@ -4,11 +4,28 @@ namespace StockSharp.SignalMaster;
 
 partial class SignalMasterMessageAdapter
 {
+	private class RequestIdGenerator : Ecng.Common.IdGenerator
+	{
+		private long _currentId;
+
+		public RequestIdGenerator()
+		{
+			_currentId = 1;
+		}
+
+		public override long GetNextId()
+		{
+			return Interlocked.Increment(ref _currentId);
+		}
+	}
+	private RequestIdGenerator _requestIdGenerator = new RequestIdGenerator();
 	private readonly TimeSpan _orderHistoryInterval = TimeSpan.FromDays(7);
 	private const int _fillsPaginationLimit = 100;
 
 	private long? _portfolioLookupSubMessageTransactionID;
 	private bool _isOrderSubscribed;
+
+
 
 	private string PortfolioName => nameof(SignalMaster) + "_" + Key.ToId().To<string>();
 
@@ -251,7 +268,8 @@ partial class SignalMasterMessageAdapter
 			});
 
 			// ✅ Step 2: Get account balance from the broker
-			var balance = await _restClient.GetAccountBalance(portfolioName, DateTime.Now, DateTime.Now, cancellationToken);
+			/* 나중에 이 부분을 풀고 반드시 구현할 것
+			var balance = await _restClient.GetAccountBalance(_requestIdGenerator.GetNextId(), portfolioName, DateTime.Now, DateTime.Now, cancellationToken);
 			if (balance != null)
 			{
 				var msg = this.CreatePositionChangeMessage(portfolioName, new SecurityId
@@ -279,6 +297,7 @@ partial class SignalMasterMessageAdapter
 				// ✅ Step 4: Get open positions for this account
 				SendOutMessage(msg);
 			}
+			*/
 		}
 
 		if (lookupMsg != null)
