@@ -31,6 +31,8 @@ namespace SciTrader.ViewModels
 
 		public SecuritiesViewModel()
 		{
+			DisplayName = "Securities";
+			Glyph = Images.TaskList;
 			_connectorService = ConnectorService.Instance;
 
 			Securities = new ObservableCollection<Security>();
