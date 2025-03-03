@@ -106,6 +106,14 @@
 				<dxb:BarStaticItem Content="{Binding StatusMessage}"/>
             </dxb:StatusBarControl>
 			<!--<Button Grid.Row="2" Width="80" x:Name="Setting" Content="Setting" Click="Setting_Click" />-->
-        </Grid>
+			<dx:LoadingDecorator x:Name="BusyIndicator" Grid.Row="1">
+				<dx:LoadingDecorator.SplashScreenTemplate>
+					<DataTemplate>
+						<dx:WaitIndicator DeferedVisibility="True" Content="{Binding Title}"/>
+					</DataTemplate>
+				</dx:LoadingDecorator.SplashScreenTemplate>
+
+			</dx:LoadingDecorator>
+		</Grid>
     </dxb:BarManager>
 </dx:ThemedWindow>

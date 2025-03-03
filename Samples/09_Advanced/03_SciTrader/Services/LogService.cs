@@ -19,8 +19,18 @@ namespace SciTrader.Services
 		{
 			LogManager = new LogManager();
 			string defaultDataPath = ConfigService.Instance.DefaultDataPath;
-			LogManager.Listeners.Add(new FileLogListener { LogDirectory = Path.Combine(defaultDataPath, "Logs") });
+			string logDirectory = Path.Combine(defaultDataPath, "Logs");
 
+			// ✅ Ensure the directory exists
+			Directory.CreateDirectory(logDirectory);
+
+			// ✅ Create a file listener with append mode
+			var fileListener = new FileLogListener { LogDirectory = logDirectory };
+
+			// ✅ Ensure previous logs are kept
+			fileListener.Append = true;
+
+			LogManager.Listeners.Add(fileListener);
 		}
 
 		public void SetConnector(Connector connector)
@@ -43,5 +53,4 @@ namespace SciTrader.Services
 			LogManager.Application.AddDebugLog(message, ex);
 		}
 	}
-
 }

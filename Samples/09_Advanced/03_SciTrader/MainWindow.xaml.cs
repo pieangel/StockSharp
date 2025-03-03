@@ -48,10 +48,29 @@ using StockSharp.Algo.Storages.Csv;
 using SciTrader.Services;
 using StockSharp.Localization;
 using StockSharp.Xaml.GridControl;
+using Ecng.ComponentModel;
 
 namespace SciTrader
 {
     public partial class MainWindow : ThemedWindow {
+
+		private class LoadingContext : NotifiableObject
+		{
+			private string _title;
+
+			public string Title
+			{
+				get => _title;
+				set
+				{
+					_title = value;
+					NotifyChanged(nameof(Title));
+				}
+			}
+		}
+
+		private readonly LoadingContext _loadingContext;
+
 		private Connector _connector;
 		public Connector Connector => _connector;
 		private bool _isConnected;
@@ -87,7 +106,7 @@ namespace SciTrader
 
 			// Show loading message before starting
 			LoadingMessage.Visibility = Visibility.Visible;
-
+			BusyIndicator.IsSplashScreenShown = true;
 			await downloader.DownloadAllFilesAsync(async () =>
 			{
 				var symbolManager = ((App)Application.Current).SymbolManager;
@@ -102,7 +121,7 @@ namespace SciTrader
 
 				// Hide loading message after completion
 				LoadingMessage.Visibility = Visibility.Collapsed;
-
+				this.GuiAsync(() => BusyIndicator.IsSplashScreenShown = false);
 				//MessageBox.Show("Download completed successfully!", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
 			});
 		}
@@ -120,7 +139,14 @@ namespace SciTrader
 				InitializeComponent();
 
 				EventBus.Instance.PublishMainWindow(this);
-				
+
+				Title = Title.Put(LocalizedStrings.Chart);
+
+				_loadingContext = new LoadingContext();
+				BusyIndicator.SplashScreenDataContext = _loadingContext;
+
+				this.GuiAsync(() => _loadingContext.Title = "SciTrader");
+
 			}
 			catch (Exception ex)
 			{
