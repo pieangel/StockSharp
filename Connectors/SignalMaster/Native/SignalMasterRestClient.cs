@@ -5,6 +5,7 @@ using System.Security;
 using System.Security.Cryptography;
 
 using Newtonsoft.Json.Linq;
+using SciTrader.Model;
 
 class SignalMasterRestClient : BaseLogReceiver
 {
@@ -46,10 +47,20 @@ class SignalMasterRestClient : BaseLogReceiver
 		return ProcessRequest<List<Candle>>(Method.Get, $"api/markets/{currency}/candles?resolution={resolution.TotalSeconds}&start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
 	}
 
+	public Task<AccountBalance> GetAccountBalance(string account, DateTime start, DateTime end, CancellationToken cancellationToken)
+	{
+		return ProcessRequest<AccountBalance>(Method.Get, $"api/balance?account={account}&start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
+	}
+
 	public async Task<(List<Order> histOrders, bool hasMoreData)> GetMarketOrderHistoryAndHasMoreOrders(string subaccountName, DateTime startTime, CancellationToken cancellationToken)
 	{
 		var response = await ProcessSignedRequest<List<Order>, SignalMasterRestResponseHasMoreData<List<Order>>>(Method.Get, $"api/orders/history?start_time={GetSecondsFromEpochStart(startTime)}", subaccountName, default, cancellationToken);
 		return (response.Result, response.HasMoreData);
+	}
+
+	public Task<List<Account>> GetAccounts(CancellationToken cancellationToken)
+	{
+		return ProcessRequest<List<Account>>(Method.Get, "api/accounts", default, cancellationToken);
 	}
 
 	public Task<List<Balance>> GetBalances(string subaccountName, CancellationToken cancellationToken)
@@ -60,6 +71,11 @@ class SignalMasterRestClient : BaseLogReceiver
 	public Task<List<Futures>> GetFuturesPositions(string subaccountName, CancellationToken cancellationToken)
 	{
 		return ProcessSignedRequest<List<Futures>>(Method.Get, "api/positions", subaccountName, default, cancellationToken);
+	}
+
+	public Task<List<SymbolPosition>> GetPositions(string subaccountName, CancellationToken cancellationToken)
+	{
+		return ProcessSignedRequest<List<SymbolPosition>>(Method.Get, "api/positions", subaccountName, default, cancellationToken);
 	}
 
 	public Task<Order> RegisterOrder(string marketName, Sides side, decimal? price, OrderTypes orderType, decimal amount, string clientId, string subaccountName, CancellationToken cancellationToken)

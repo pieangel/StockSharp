@@ -1,4 +1,6 @@
-﻿namespace StockSharp.SignalMaster;
+﻿using StockSharp.Messages;
+using Ecng.Common;
+namespace StockSharp.SignalMaster;
 
 partial class SignalMasterMessageAdapter
 {
@@ -235,41 +237,53 @@ partial class SignalMasterMessageAdapter
 			return;
 		}
 
-		SendOutMessage(new PortfolioMessage
-		{
-			PortfolioName = GetPortfolioName(),
-			BoardCode = BoardCodes.SignalMaster,
-			OriginalTransactionId = (long)_portfolioLookupSubMessageTransactionID,
-		});
 
-		if (lookupMsg != null)
+		var accounts = await _restClient.GetAccounts(cancellationToken);
+		foreach (var account in accounts)
 		{
-			SendSubscriptionResult(lookupMsg);
-		}
-
-		var balances = await _restClient.GetBalances(SubaccountName, cancellationToken);
-		if (balances != null)
-		{
-			foreach (var balance in balances)
+			string portfolioName = account.AccountCode;
+			// ✅ Step 1: Send Portfolio Info
+			SendOutMessage(new PortfolioMessage
 			{
-				var msg = this.CreatePositionChangeMessage(GetPortfolioName(), balance.Coin.ToStockSharp());
-				msg.TryAdd(PositionChangeTypes.CurrentValue, balance.Total, true);
-				msg.TryAdd(PositionChangeTypes.BlockedValue, balance.Total - balance.Free, true);
+				PortfolioName = portfolioName,
+				BoardCode = BoardCodes.SignalMaster,
+				OriginalTransactionId = (long)_portfolioLookupSubMessageTransactionID,
+			});
+
+			// ✅ Step 2: Get account balance from the broker
+			var balance = await _restClient.GetAccountBalance(portfolioName, DateTime.Now, DateTime.Now, cancellationToken);
+			if (balance != null)
+			{
+				var msg = this.CreatePositionChangeMessage(portfolioName, new SecurityId
+				{
+					SecurityCode = account.Currency,
+					BoardCode = BoardCodes.Coinbase,
+				});
+				msg.TryAdd(PositionChangeTypes.CurrentValue, balance.Balance, true);
+				msg.TryAdd(PositionChangeTypes.BlockedValue, balance.Total - balance.Balance, true);
+				if (_portfolioLookupSubMessageTransactionID != null)
+					msg.OriginalTransactionId = (long)_portfolioLookupSubMessageTransactionID;
+				// ✅ Step 3: Send account balance to StockSharp
+				SendOutMessage(msg);
+			}
+
+			var positions = await _restClient.GetPositions(portfolioName, cancellationToken);
+
+			foreach (var position in positions)
+			{
+				var msg = this.CreatePositionChangeMessage(portfolioName, position.Name.ToStockSharp());
+				msg.TryAdd(PositionChangeTypes.CurrentValue, position.Cost, true);
+				msg.TryAdd(PositionChangeTypes.UnrealizedPnL, position.UnrealizedPnl, true);
+				msg.TryAdd(PositionChangeTypes.AveragePrice, position.EntryPrice, true);
 				if (_portfolioLookupSubMessageTransactionID != null) msg.OriginalTransactionId = (long)_portfolioLookupSubMessageTransactionID;
+				// ✅ Step 4: Get open positions for this account
 				SendOutMessage(msg);
 			}
 		}
 
-		var futures = await _restClient.GetFuturesPositions(SubaccountName, cancellationToken);
-
-		foreach (var fut in futures)
+		if (lookupMsg != null)
 		{
-			var msg = this.CreatePositionChangeMessage(GetPortfolioName(), fut.Name.ToStockSharp());
-			msg.TryAdd(PositionChangeTypes.CurrentValue, fut.Cost, true);
-			msg.TryAdd(PositionChangeTypes.UnrealizedPnL, fut.UnrealizedPnl, true);
-			msg.TryAdd(PositionChangeTypes.AveragePrice, fut.EntryPrice, true);
-			if (_portfolioLookupSubMessageTransactionID != null) msg.OriginalTransactionId = (long)_portfolioLookupSubMessageTransactionID;
-			SendOutMessage(msg);
+			SendSubscriptionResult(lookupMsg);
 		}
 	}
 

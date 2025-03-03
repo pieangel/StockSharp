@@ -3,9 +3,16 @@
 [Obfuscation(Feature = "renaming", ApplyToMembers = true)]
 internal class Account
 {
-	[JsonProperty("username")]
-	public string UserName { get; set; }
+	[JsonProperty("account_no")]
+	public string AccountCode { get; set; }
 
-	[JsonProperty("totalAccountValue")]
-	public string TotalAccountValue { get; set; }
+	[JsonProperty("account_name")]
+	public string AccountName { get; set; }
+
+	[JsonProperty("account_type")]
+	public string AccountType { get; set; }
+
+	[JsonProperty("currency")]
+	public string Currency { get; set; }
+
 }
