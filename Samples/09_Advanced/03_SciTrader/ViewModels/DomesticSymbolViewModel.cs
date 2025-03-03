@@ -13,6 +13,10 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Threading;
 using DevExpress.Mvvm.POCO;
+using System.Reactive.Linq;
+using SciTrader.Services;
+using StockSharp.Algo;
+using StockSharp.BusinessEntities;
 
 namespace SciTrader.ViewModels
 {
@@ -25,6 +29,12 @@ namespace SciTrader.ViewModels
 
 	public class DomesticSymbolViewModel : PanelWorkspaceViewModel
 	{
+
+		private Connector _connector;
+		private readonly ConnectorService _connectorService;
+		private IDisposable _securitySubscription;
+
+
 		private RadioButtonSelection _selectedRadioButton;
 		public RadioButtonSelection SelectedRadioButton
 		{
@@ -88,6 +98,7 @@ namespace SciTrader.ViewModels
 
 		public DomesticSymbolViewModel()
 		{
+			_connectorService = ConnectorService.Instance;
 			DisplayName = "국내시장";
 			Glyph = Images.Toolbox;
 
@@ -106,6 +117,30 @@ namespace SciTrader.ViewModels
 
 			if (MonthOptions.Any())
 				SelectedMonth = MonthOptions.First();
+
+			EventBus.Instance.ConnectorObservable
+				.Subscribe(connector =>
+				{
+					_connector = connector;
+					// ✅ Subscribe to security updates
+					_securitySubscription = _connectorService.SecurityStream
+						//.ObserveOn(RxApp.MainThreadScheduler) // Ensure updates happen on the UI thread
+						.Subscribe(OnSecurityReceived);
+				});
+		}
+
+		private void OnSecurityReceived(Security security)
+		{
+			if (!futureItemsDict.ContainsKey(security.Name))
+			{
+				AddOrUpdateFuture(new FutureItem
+				{
+					FutureSymbolCode = security.Code,
+					ShortSymbolCode = security.Code,
+					FutureName = security.Name,
+					Price = 100
+				});
+			}
 		}
 
 		private void LoadData()
