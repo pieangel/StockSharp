@@ -155,6 +155,8 @@ namespace SciTrader
 
 			_connector = new Connector(entityRegistry.Securities, entityRegistry.PositionStorage, exchangeInfoProvider, storageRegistry, snapshotRegistry, new StorageBuffer());
 			ConnectorService.Instance.SetConnector(_connector);
+			var logService = SciTrader.Services.LogService.Instance;
+			logService.SetConnector(_connector);
 			EventBus.Instance.PublishConnector(ConnectorService.Instance.GetConnector());
 		}
 
