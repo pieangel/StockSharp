@@ -31,6 +31,11 @@ class SignalMasterRestClient : BaseLogReceiver
 		return ProcessRequest<List<Market>>(Method.Get, "api/markets", default, cancellationToken);
 	}
 
+	public Task<List<Symbol>> GetSymbols(CancellationToken cancellationToken)
+	{
+		return ProcessRequest<List<Symbol>>(Method.Get, "api/symbols", default, cancellationToken);
+	}
+
 	public Task<List<Trade>> GetMarketTrades(string currency, DateTime start, DateTime end, CancellationToken cancellationToken)
 	{
 		return ProcessRequest<List<Trade>>(Method.Get, $"api/markets/{currency}/trades?start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
@@ -115,7 +120,7 @@ class SignalMasterRestClient : BaseLogReceiver
 
 	private static Uri GetUri(string endpoint)
 	{
-		return new Uri($"https://ftx.com/{endpoint}");
+		return new Uri($"http://localhost:80/{endpoint}");
 	}
 
 	private Task<dynamic> ProcessRequest(Method method, string endpoint, string jsonBody, CancellationToken cancellationToken)

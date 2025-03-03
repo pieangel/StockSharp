@@ -220,19 +220,19 @@ partial class SignalMasterMessageAdapter
 		var secTypes = lookupMsg.GetSecurityTypes();
 		var left = lookupMsg.Count ?? long.MaxValue;
 
-		var markets = await _restClient.GetMarkets(cancellationToken);
+		var symbols = await _restClient.GetSymbols(cancellationToken);
 
-		foreach (var info in markets)
+		foreach (var info in symbols)
 		{
 			var secMsg = new SecurityMessage
 			{
-				SecurityId = info.Name.ToStockSharp(),
+				SecurityId = info.SymbolCode.ToStockSharp(),
 				SecurityType = info.Type == "future" ? SecurityTypes.Future : SecurityTypes.CryptoCurrency,
-				MinVolume = info.MinProvideSize,
+				MinVolume = info.MinAmount,
 				Name = info.Name,
-				VolumeStep = info.SizeIncrement,
+				VolumeStep = info.ContractSize,
 				OriginalTransactionId = lookupMsg.TransactionId,
-				PriceStep = info.PriceIncrement
+				PriceStep = info.TickSize
 			};
 
 			if (!secMsg.IsMatch(lookupMsg, secTypes))

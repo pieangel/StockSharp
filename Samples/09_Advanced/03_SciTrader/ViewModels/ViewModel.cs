@@ -31,7 +31,7 @@ namespace SciTrader.ViewModels
 		}
 
 		#region IDisposable Members
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			OnDispose();
 		}

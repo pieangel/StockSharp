@@ -11,10 +11,7 @@ using System.Windows.Input;
 using StockSharp.Algo;
 using StockSharp.BusinessEntities;
 using StockSharp.Messages;
-using StockSharp.Xaml;
-using SciTrader.Helpers;
-using Ecng.IO.Fossil;
-using SciTrader.Model;
+using System.Reactive.Linq;
 
 using DevExpress.Mvvm;
 
@@ -28,9 +25,13 @@ namespace SciTrader.ViewModels
 		private Connector _connector;
 		private Security _selectedSecurity;
 		protected override string WorkspaceName { get { return "Toolbox"; } }
+
+		private readonly ConnectorService _connectorService;
+		private IDisposable _securitySubscription;
+
 		public SecuritiesViewModel()
 		{
-			//_connector = MainWindow.Instance.Connector;
+			_connectorService = ConnectorService.Instance;
 
 			Securities = new ObservableCollection<Security>();
 			TimeFrames = new ObservableCollection<TimeSpan>();
@@ -59,7 +60,20 @@ namespace SciTrader.ViewModels
 				.Subscribe(connector =>
 				{
 					_connector = connector;
+					// ✅ Subscribe to security updates
+					_securitySubscription = _connectorService.SecurityStream
+						//.ObserveOn(RxApp.MainThreadScheduler) // Ensure updates happen on the UI thread
+						.Subscribe(OnSecurityReceived);
 				});
+
+		}
+
+		private void OnSecurityReceived(Security security)
+		{
+			if (!Securities.Contains(security))
+			{
+				Securities.Add(security);
+			}
 		}
 
 		public ObservableCollection<Security> Securities { get; }
@@ -179,6 +193,12 @@ namespace SciTrader.ViewModels
 		private bool CanSelectSecurity(Security security)
 		{
 			return security != null; // Enables the command only when a valid security is selected.
+		}
+
+		public override void Dispose()
+		{
+			_securitySubscription?.Dispose(); // ✅ Unsubscribe to prevent memory leaks
+			base.Dispose();
 		}
 	}
 }
