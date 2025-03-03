@@ -19,6 +19,8 @@ namespace SciTrader.Services
 		private Connector _connector;
 		private readonly Subject<Security> _securitySubject = new();
 
+		private readonly Subject<Connector> _connectorSubject = new(); // ✅ Notify subscribers
+
 		public void SetConnector(Connector connector)
 		{
 			if (_connector != null)
@@ -31,8 +33,12 @@ namespace SciTrader.Services
 			if (_connector != null)
 			{
 				_connector.SecurityReceived += OnSecurityReceived; // Subscribe to new connector
+				_connectorSubject.OnNext(_connector); // ✅ Notify subscribers
 			}
 		}
+
+		// ✅ Observable stream for Connector updates
+		public IObservable<Connector> ConnectorStream => _connectorSubject;
 
 		public Connector GetConnector() => _connector;
 

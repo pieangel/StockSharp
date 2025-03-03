@@ -154,7 +154,6 @@ namespace SciTrader
 			var snapshotRegistry = new SnapshotRegistry(Path.Combine(path, "Snapshots"));
 
 			_connector = new Connector(entityRegistry.Securities, entityRegistry.PositionStorage, exchangeInfoProvider, storageRegistry, snapshotRegistry, new StorageBuffer());
-
 			ConnectorService.Instance.SetConnector(_connector);
 			EventBus.Instance.PublishConnector(ConnectorService.Instance.GetConnector());
 		}

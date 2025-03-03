@@ -117,6 +117,7 @@ namespace SciTrader.ViewModels {
         ObservableCollection<WorkspaceViewModel> workspaces;
 
         public MainViewModel() {
+			SecurityViewModel = CreatePanelWorkspaceViewModel<SecurityViewModel>();
 			MonitorViewModel = CreatePanelWorkspaceViewModel<MonitorViewModel>();
 			ErrorListViewModel = CreatePanelWorkspaceViewModel<ErrorListViewModel>();
             OutputViewModel = CreatePanelWorkspaceViewModel<OutputViewModel>();
@@ -181,6 +182,8 @@ namespace SciTrader.ViewModels {
         public OutputViewModel OutputViewModel { get; private set; }
 
 		public MonitorViewModel MonitorViewModel { get; private set; }
+
+		public SecurityViewModel SecurityViewModel { get; private set; }
 
 		public PropertiesViewModel PropertiesViewModel { get; private set; }
         public SearchResultsViewModel SearchResultsViewModel { get; set; }
@@ -413,6 +416,7 @@ namespace SciTrader.ViewModels {
         void InitDefaultLayout() {
             var panels = new List<PanelWorkspaceViewModel> 
             { 
+                SecurityViewModel,
                 ToolboxViewModel, 
                 OpenOrdersViewModel, 
                 HomeSymbolViewModel, 
