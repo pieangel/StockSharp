@@ -20,7 +20,8 @@
                  Height="650"
                  Width="1000"
 				 Loaded="MainWindow_OnLoaded"
-                 DataContext="{dxmvvm:ViewModelSource Type=viewModels:MainViewModel}">
+                 DataContext="{dxmvvm:ViewModelSource Type=viewModels:MainViewModel}"
+				 WindowState="Maximized">
     <dx:ThemedWindow.ToolbarItems>
         <dxb:MainMenuControl VerticalAlignment="Center"/>
         <dxe:SearchControl NullText="Quick Launch" ShowMRUButton="False" ShowFindButton="True" Height="22" Margin="4,0,6,0" Width="200"/>
