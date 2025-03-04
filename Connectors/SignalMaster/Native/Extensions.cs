@@ -34,25 +34,25 @@ static class Extensions
 	}
 
 	/// <summary>
-	/// Security ID to currency string
+	/// Security ID to symbol string
 	/// </summary>
 	/// <param name="securityId">ID</param>
 	/// <returns></returns>
-	public static string ToCurrency(this SecurityId securityId)
+	public static string ToNextSecurity(this SecurityId securityId)
 	{
 		return securityId.SecurityCode;
 	}
 
 	/// <summary>
-	/// Currency string to S# Security Id
+	/// symbol code string to S# Security Id
 	/// </summary>
-	/// <param name="currency"></param>
+	/// <param name="symbolCode"></param>
 	/// <returns></returns>
-	public static SecurityId ToStockSharp(this string currency)
+	public static SecurityId ToStockSharp(this string symbolCode)
 	{
 		return new SecurityId
 		{
-			SecurityCode = currency,
+			SecurityCode = symbolCode,
 			BoardCode = BoardCodes.SignalMaster,
 		};
 	}
@@ -154,18 +154,22 @@ static class Extensions
 
 	public static readonly PairSet<TimeSpan, string> TimeFrames = new()
 	{
-		{ TimeSpan.FromMinutes(1), "ONE_MINUTE" },
-		{ TimeSpan.FromMinutes(5), "FIVE_MINUTE" },
-		{ TimeSpan.FromMinutes(15), "FIFTEEN_MINUTE" },
-		{ TimeSpan.FromMinutes(30), "THIRTY_MINUTE" },
-		{ TimeSpan.FromHours(1), "ONE_HOUR" },
-		{ TimeSpan.FromHours(2), "TWO_HOUR" },
-		{ TimeSpan.FromHours(6), "SIX_HOUR" },
-		{ TimeSpan.FromDays(1), "ONE_DAY" },
+		{ TimeSpan.FromMinutes(1), "1m" },
+		{ TimeSpan.FromMinutes(5), "5m" },
+		{ TimeSpan.FromMinutes(15), "15m" },
+		{ TimeSpan.FromHours(1), "1h" },
+		{ TimeSpan.FromDays(1), "1d" },
 	};
 
 	public static string ToNative(this TimeSpan timeFrame)
-		=> TimeFrames.TryGetValue(timeFrame) ?? throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, LocalizedStrings.InvalidValue);
+	{
+		var name = TimeFrames.TryGetValue(timeFrame);
+
+		if (name == null)
+			throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, LocalizedStrings.InvalidValue);
+
+		return name;
+	}
 
 	public static TimeSpan ToTimeFrame(this string name)
 		=> TimeFrames.TryGetKey2(name) ?? throw new ArgumentOutOfRangeException(nameof(name), name, LocalizedStrings.InvalidValue);

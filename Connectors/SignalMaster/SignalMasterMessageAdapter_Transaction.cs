@@ -111,7 +111,7 @@ partial class SignalMasterMessageAdapter
 
 		var price = regMsg.OrderType == OrderTypes.Market ? (decimal?)null : regMsg.Price;
 
-		var order = await _restClient.RegisterOrder(regMsg.SecurityId.ToCurrency(), regMsg.Side, price, regMsg.OrderType.Value, regMsg.Volume, regMsg.TransactionId.To<string>(), SubaccountName, cancellationToken)
+		var order = await _restClient.RegisterOrder(regMsg.SecurityId.ToSymbol(), regMsg.Side, price, regMsg.OrderType.Value, regMsg.Volume, regMsg.TransactionId.To<string>(), SubaccountName, cancellationToken)
 			?? throw new InvalidOperationException(LocalizedStrings.OrderNoExchangeId.Put(regMsg.TransactionId));
 
 		SendProcessOrderStatusResult(order, regMsg);

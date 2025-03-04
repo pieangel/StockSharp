@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using StockSharp.BusinessEntities;
 using System.Reactive.Subjects;
 using StockSharp.Messages;
+using System.Reactive.Linq;
 
 
 namespace SciTrader.Services
@@ -23,11 +24,14 @@ namespace SciTrader.Services
 
 		private readonly Subject<Connector> _connectorSubject = new(); // ✅ Notify subscribers
 
+		private readonly Subject<ICandleMessage> _candleSubject = new(); // ✅ Rx.NET stream for candles
+
 		public void SetConnector(Connector connector)
 		{
 			if (_connector != null)
 			{
 				_connector.SecurityReceived -= OnSecurityReceived; // Unsubscribe old connector
+				_connector.CandleReceived -= OnConnectorCandleReceived; // ✅ Unsubscribe previous
 			}
 
 			_connector = connector;
@@ -35,6 +39,7 @@ namespace SciTrader.Services
 			if (_connector != null)
 			{
 				_connector.SecurityReceived += OnSecurityReceived; // Subscribe to new connector
+				_connector.CandleReceived += OnConnectorCandleReceived; // ✅ Subscribe to new connector
 				_connectorSubject.OnNext(_connector); // ✅ Notify subscribers
 			}
 		}
@@ -76,6 +81,8 @@ namespace SciTrader.Services
 				Count = 3200,
 				IsFinishedOnly = true
 			};
+			// 이 부분 너무 중요함. security 정보를 MargetDataMessage에 넣어줘야 함.
+			security.ToMessage().CopyTo(mdMsg);
 
 			Subscription _subscription = _connector.SubscribeMarketData(mdMsg);
 		}
@@ -106,6 +113,14 @@ namespace SciTrader.Services
 			var tf = mdMsg.GetTimeFrame();
 
 			Subscription _subscription = _connector.SubscribeMarketData(mdMsg);
+		}
+
+		// ✅ Observable stream for Candle updates
+		public IObservable<ICandleMessage> CandleStream => _candleSubject;
+
+		private void OnConnectorCandleReceived(Subscription subscription, ICandleMessage candle)
+		{
+			_candleSubject.OnNext(candle); // ✅ Push candle updates to Rx.NET stream
 		}
 	}
 }

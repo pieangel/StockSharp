@@ -37,14 +37,14 @@ class SignalMasterRestClient : BaseLogReceiver
 		return ProcessRequest<List<Symbol>>(Method.Get, "api/symbols", default, cancellationToken);
 	}
 
-	public Task<List<Trade>> GetMarketTrades(string currency, DateTime start, DateTime end, CancellationToken cancellationToken)
+	public Task<List<Trade>> GetMarketTrades(string symbol_code, DateTime start, DateTime end, CancellationToken cancellationToken)
 	{
-		return ProcessRequest<List<Trade>>(Method.Get, $"api/markets/{currency}/trades?start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
+		return ProcessRequest<List<Trade>>(Method.Get, $"api/markets/{symbol_code}/trades?start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
 	}
 
-	public Task<List<Candle>> GetMarketCandles(string currency, TimeSpan resolution, DateTime start, DateTime end, CancellationToken cancellationToken)
+	public Task<List<Candle>> GetMarketCandles(string request_id, string symbol_code, string resolution, string start, string end, CancellationToken cancellationToken)
 	{
-		return ProcessRequest<List<Candle>>(Method.Get, $"api/markets/{currency}/candles?resolution={resolution.TotalSeconds}&start_time={GetSecondsFromEpochStart(start)}&end_time={GetSecondsFromEpochStart(end)}", default, cancellationToken);
+		return ProcessRequest<List<Candle>>(Method.Get, $"api/candles?request_id={request_id}&resolution={resolution}&start_time={start}&end_time={end}", default, cancellationToken);
 	}
 
 	public Task<AccountBalance> GetAccountBalance(long request_id, string account, DateTime start, DateTime end, CancellationToken cancellationToken)
