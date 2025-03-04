@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StockSharp.BusinessEntities;
 using System.Reactive.Subjects;
+using StockSharp.Messages;
 
 namespace SciTrader.Services
 {
@@ -56,6 +57,49 @@ namespace SciTrader.Services
 			{
 				_securitySubject.OnNext(security); // ✅ Push security updates to subscribers
 			}
+		}
+
+		public void SubscribeToTickCandles(Security security, int tickCycle = 200)
+		{
+			if (_connector == null)
+				throw new InvalidOperationException("Connector is not set.");
+
+			var mdMsg = new MarketDataMessage
+			{
+				IsSubscribe = true,
+				DataType2 = DataType.Create(typeof(TickCandleMessage), tickCycle), // ✅ Tick-based candles with 200-tick cycle
+				From = DateTime.UtcNow.AddHours(-2), // ✅ Historical data
+				To = DateTime.UtcNow,
+				BuildMode = MarketDataBuildModes.LoadAndBuild, // ✅ Load history + Build new candles
+				Skip = 0,
+				Count = 3200,
+				IsFinishedOnly = true
+			};
+
+			Subscription _subscription = _connector.SubscribeMarketData(mdMsg);
+		}
+
+		// ✅ Subscribe to candle updates
+		public void SubscribeToCandles(Security security, TimeSpan timespan)
+		{
+			if (_connector == null)
+				throw new InvalidOperationException("Connector is not set.");
+
+			var mdMsg = new MarketDataMessage
+			{
+				IsSubscribe = true,
+				DataType2 = DataType.Create(typeof(TimeFrameCandleMessage), timespan), // ✅ Correctly setting the TimeFrame
+				From = DateTime.UtcNow.AddHours(-2),
+				To = DateTime.UtcNow,
+				BuildMode = MarketDataBuildModes.LoadAndBuild, // ✅ Load history + Build new candles
+				Skip = 0,
+				Count = 3200,
+				IsFinishedOnly = true
+			};
+
+			var tf = mdMsg.GetTimeFrame();
+
+			Subscription _subscription = _connector.SubscribeMarketData(mdMsg);
 		}
 	}
 }

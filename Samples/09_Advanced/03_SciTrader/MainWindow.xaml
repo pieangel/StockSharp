@@ -90,7 +90,7 @@
                 </dxdo:LayoutGroup>
             </dxdo:DockLayoutManager>
 			<!-- Loading Message Overlay -->
-			<TextBlock x:Name="LoadingMessage"
+			<!--<TextBlock x:Name="LoadingMessage"
                Text="Downloading Symbol Files..."
                Foreground="Red"
                FontSize="16"
@@ -99,21 +99,23 @@
                Padding="10"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               Visibility="Collapsed"/>
+               Visibility="Collapsed"/>-->
+			<dx:LoadingDecorator x:Name="BusyIndicator" 
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+				<dx:LoadingDecorator.SplashScreenTemplate>
+					<DataTemplate>
+						<dx:WaitIndicator DeferedVisibility="True" Content="{Binding Title}"/>
+					</DataTemplate>
+				</dx:LoadingDecorator.SplashScreenTemplate>
+			</dx:LoadingDecorator>
 
 			<!-- Status Bar -->
 			<dxb:StatusBarControl HideWhenEmpty="False" Caption="StatusBar" AllowCustomizationMenu="False" Grid.Row="1">
 				<dxb:BarStaticItem Content="{Binding StatusMessage}"/>
             </dxb:StatusBarControl>
 			<!--<Button Grid.Row="2" Width="80" x:Name="Setting" Content="Setting" Click="Setting_Click" />-->
-			<dx:LoadingDecorator x:Name="BusyIndicator" Grid.Row="1">
-				<dx:LoadingDecorator.SplashScreenTemplate>
-					<DataTemplate>
-						<dx:WaitIndicator DeferedVisibility="True" Content="{Binding Title}"/>
-					</DataTemplate>
-				</dx:LoadingDecorator.SplashScreenTemplate>
-
-			</dx:LoadingDecorator>
+			
 		</Grid>
     </dxb:BarManager>
 </dx:ThemedWindow>

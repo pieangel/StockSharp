@@ -8,13 +8,8 @@ public partial class SignalMasterMessageAdapter
 
 	private readonly TimeSpan[] _timeFrames = new[]
 	{
-		TimeSpan.FromSeconds(15),
-		TimeSpan.FromSeconds(60),
-		TimeSpan.FromSeconds(300),
-		TimeSpan.FromSeconds(900),
-		TimeSpan.FromSeconds(3600),
-		TimeSpan.FromSeconds(14400),
-		TimeSpan.FromSeconds(86400),
+		TimeSpan.FromMinutes(1),
+		TimeSpan.FromTicks(300),
 	};
 
 	/// <inheritdoc />
@@ -154,5 +149,10 @@ public partial class SignalMasterMessageAdapter
 	private void SessionOnWsError(Exception exception)
 	{
 		SendOutError(exception);
+	}
+
+	private void RequestCandles()
+	{
+		;
 	}
 }

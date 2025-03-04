@@ -105,7 +105,7 @@ namespace SciTrader
 			FileDownloader downloader = new FileDownloader(serverUrl, saveDirectory);
 
 			// Show loading message before starting
-			LoadingMessage.Visibility = Visibility.Visible;
+			//LoadingMessage.Visibility = Visibility.Visible;
 			BusyIndicator.IsSplashScreenShown = true;
 			await downloader.DownloadAllFilesAsync(async () =>
 			{
@@ -120,7 +120,7 @@ namespace SciTrader
 				});
 
 				// Hide loading message after completion
-				LoadingMessage.Visibility = Visibility.Collapsed;
+				//LoadingMessage.Visibility = Visibility.Collapsed;
 				this.GuiAsync(() => BusyIndicator.IsSplashScreenShown = false);
 				//MessageBox.Show("Download completed successfully!", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
 			});
@@ -145,7 +145,7 @@ namespace SciTrader
 				_loadingContext = new LoadingContext();
 				BusyIndicator.SplashScreenDataContext = _loadingContext;
 
-				this.GuiAsync(() => _loadingContext.Title = "SciTrader");
+				this.GuiAsync(() => _loadingContext.Title = "Downloading Symbol Files...");
 
 			}
 			catch (Exception ex)

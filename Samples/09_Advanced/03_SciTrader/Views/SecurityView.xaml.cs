@@ -87,6 +87,7 @@ namespace SciTrader.Views
 		{
 			SecuritySelected?.Invoke(security); // ✅ Raise the event
 			System.Diagnostics.Debug.WriteLine($"Security Selected: {security.Code}");
+			ConnectorService.Instance.SubscribeToCandles(security, TimeSpan.FromMinutes(1));
 		}
 
 		private void OnSecurityReceived(Security security)
