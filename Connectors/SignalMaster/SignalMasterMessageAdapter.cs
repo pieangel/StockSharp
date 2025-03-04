@@ -40,6 +40,7 @@ public partial class SignalMasterMessageAdapter
 
 		this.AddSupportedResultMessage(MessageTypes.SecurityLookup);
 		this.AddSupportedResultMessage(MessageTypes.PortfolioLookup);
+		this.AddSupportedResultMessage(MessageTypes.OrderStatus);
 	}
 
 	/// <inheritdoc />

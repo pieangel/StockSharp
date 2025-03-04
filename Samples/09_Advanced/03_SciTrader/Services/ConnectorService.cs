@@ -8,6 +8,7 @@ using StockSharp.BusinessEntities;
 using System.Reactive.Subjects;
 using StockSharp.Messages;
 
+
 namespace SciTrader.Services
 {
 	public class ConnectorService
@@ -85,9 +86,13 @@ namespace SciTrader.Services
 			if (_connector == null)
 				throw new InvalidOperationException("Connector is not set.");
 
+			Console.WriteLine($"Security: {security.Id}, Board: {security.Board?.Code ?? "NULL"}");
+
 			var mdMsg = new MarketDataMessage
 			{
+				BoardCode = security.Board.Code,
 				IsSubscribe = true,
+				// 이부분 너무 중요함. 반드시 이 부분을 명심할 것. 
 				DataType2 = DataType.Create(typeof(TimeFrameCandleMessage), timespan), // ✅ Correctly setting the TimeFrame
 				From = DateTime.UtcNow.AddHours(-2),
 				To = DateTime.UtcNow,
@@ -96,7 +101,8 @@ namespace SciTrader.Services
 				Count = 3200,
 				IsFinishedOnly = true
 			};
-
+			// 이 부분 너무 중요함. security 정보를 MargetDataMessage에 넣어줘야 함.
+			security.ToMessage().CopyTo(mdMsg);
 			var tf = mdMsg.GetTimeFrame();
 
 			Subscription _subscription = _connector.SubscribeMarketData(mdMsg);

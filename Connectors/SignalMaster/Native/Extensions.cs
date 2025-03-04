@@ -140,7 +140,7 @@ static class Extensions
 		return new SecurityId
 		{
 			SecurityCode = symbol.ToUpperInvariant(),
-			BoardCode = BoardCodes.Coinbase,
+			BoardCode = BoardCodes.Krx,
 		};
 	}
 

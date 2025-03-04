@@ -1106,4 +1106,14 @@ partial class Exchange
 	{
 		Name = nameof(EUREX),
 	};
+
+	/// <summary>
+	/// Information about <see cref="signalMaster"/>.
+	/// </summary>
+	public static Exchange signalMaster { get; } = new()
+	{
+		Name = "signalMaster",
+		FullNameLoc = LocalizedStrings.SignalMasterKey,
+		CountryCode = CountryCodes.KR,
+	};
 }
